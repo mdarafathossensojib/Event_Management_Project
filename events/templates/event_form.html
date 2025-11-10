@@ -1,0 +1,26 @@
+<!-- event_form.html -->
+{% extends 'base.html' %}
+{% block title %}Create Event{% endblock %}
+
+{% block content %}
+<!--  Success Message -->
+{% if messages %}
+  {% for msg in messages %}
+    <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ msg }}</div>
+  {% endfor %}
+{% endif %}
+
+
+<div class="bg-white p-8 rounded shadow w-full md:w-2/3 mx-auto">
+
+  <!--  Main Event Form -->
+  <form method="POST" class="space-y-5 mb-10">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600">Submit</button>
+  </form>
+
+</div>
+
+{% endblock %}
