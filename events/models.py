@@ -15,6 +15,7 @@ class Event(models.Model):
     date = models.DateField()
     time = models.TimeField()
     location = models.CharField(max_length=255)
+    asset = models.ImageField(upload_to='event_asset', blank=True, null=True) #default='tasks_asset/default_img.jpg'
 
     def __str__(self):
         return self.name

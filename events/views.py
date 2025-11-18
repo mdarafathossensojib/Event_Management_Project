@@ -82,14 +82,14 @@ def event_create(request):
     event_form = EventForm()
 
     if request.method == 'POST':
-        event_form = EventForm(request.POST)
+        event_form = EventForm(request.POST, request.FILES)
         if event_form.is_valid():
             event = event_form.save()
             # Add participants to the event
             for p in event_form.cleaned_data['participants']:
                 p.events.add(event)
             messages.success(request, 'Event created successfully!')
-            return redirect('dashboard')
+            return redirect('home')
 
     context = {'form': event_form}
     return render(request, 'event_form.html', context)
@@ -101,7 +101,7 @@ def event_update(request, id):
     event_form.fields['participants'].initial = event.participants.all()
 
     if request.method == 'POST':
-        event_form = EventForm(request.POST, instance=event)
+        event_form = EventForm(request.POST, request.FILES, instance=event)
         if event_form.is_valid():
             event = event_form.save()
             # Update participants
