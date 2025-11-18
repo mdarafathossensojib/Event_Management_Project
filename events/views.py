@@ -6,7 +6,7 @@ from events.models import Event, Participant, Category
 from django.utils import timezone
 
 
-def dashboard(request):
+def events(request):
     today = timezone.now().date()
 
     # Base Query
@@ -65,7 +65,7 @@ def dashboard(request):
         'filter_type': filter_type,
     }
 
-    return render(request, 'dashboard.html', context)
+    return render(request, 'events.html', context)
 
 
 

@@ -1,15 +1,4 @@
-{% load static %}
-<!-- header.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}{% endblock title %}</title>
-  <link rel="stylesheet" href="{% static 'css/output.css' %}">
-</head>
-<body class="font-sans">
-    <!-- Top Login Bar (Hidden on Scroll) -->
+<!-- Top Login Bar (Hidden on Scroll) -->
     <div
       id="topbar"
       class="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-sm py-2 transition-all duration-300"
@@ -31,14 +20,14 @@
           >
         </div>
         <div class="flex items-center gap-6">
-          <a href="#" class="flex items-center gap-1"
+          <a href="{% url 'sign-up' %}" class="flex items-center gap-1"
             ><span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
 </svg>
 </span> Register</a
           >
           <span>|</span>
-          <a href="{% url 'event-create' %}" class="flex items-center gap-1"><span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <a href="{% url 'sign-in' %}" class="flex items-center gap-1"><span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
 </svg>
 </span> Login</a>
@@ -63,8 +52,8 @@
         <nav
           class="hidden md:flex items-center gap-8 font-semibold text-gray-700"
         >
-          <a href="{% url 'dashboard' %}" class="hover:text-orange-500">DASHBOARD</a>
-          <a href="{% url 'dashboard' %}" class="hover:text-orange-500">EVENTS</a>
+          <a href="{% url 'home' %}" class="hover:text-orange-500">DASHBOARD</a>
+          <a href="{% url 'home' %}" class="hover:text-orange-500">EVENTS</a>
           <a href="{% url 'participants' %}" class="hover:text-orange-500"
             >PARTICIPANTS</a
           >
@@ -103,36 +92,9 @@
         id="mobile-menu"
         class="hidden md:hidden bg-white shadow flex flex-col p-4 space-y-3 text-gray-700 font-semibold"
       >
-        <a href="{% url 'dashboard' %}" class="hover:text-orange-500">DASHBOARD</a>
-        <a href="{% url 'dashboard' %}" class="hover:text-orange-500">EVENTS</a>
+        <a href="{% url 'home' %}" class="hover:text-orange-500">DASHBOARD</a>
+        <a href="{% url 'home' %}" class="hover:text-orange-500">EVENTS</a>
         <a href="{% url 'participants' %}" class="hover:text-orange-500">PARTICIPANTS</a>
         <a href="{% url 'category' %}" class="hover:text-orange-500">CATEGORIES</a>
       </div>
     </header>
-
-
-
-    {% block content %}
-    
-    {% endblock content %}
-
-
-    <script>
-      // Hide topbar on scroll
-      let topbar = document.getElementById("topbar");
-      let lastScroll = 0;
-
-      window.addEventListener("scroll", () => {
-        let current = window.scrollY;
-        if (current > lastScroll) topbar.style.transform = "translateY(-100%)";
-        else topbar.style.transform = "translateY(0)";
-        lastScroll = current;
-      });
-
-      // Mobile toggle
-      document.getElementById("menu-btn").addEventListener("click", () => {
-        document.getElementById("mobile-menu").classList.toggle("hidden");
-      });
-    </script>
-  </body>
-</html>
