@@ -7,6 +7,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
     path('no-permission/', no_permission, name='no-permission'),
-    path('events/', include('events.urls')),
-    path('users/', include('users.urls')),
+    path('event/', include('events.urls')),
+    path('user/', include('users.urls')),
 ] + debug_toolbar_urls()

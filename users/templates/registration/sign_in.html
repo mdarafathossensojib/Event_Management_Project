@@ -3,5 +3,31 @@
 
 {% block content %}
 
+        <div class="w-1/2 mx-auto">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+        
+        <div class="w-1/2 mx-auto my-10 bg-gray-200 p-6 rounded-lg shadow">
+            <h1 class="text-2xl font-bold mb-5 text-center">Sign In</h1>
+
+            {% if form.non_field_errors %}
+                <p class="text-red-500 text-sm mb-3">{{ form.non_field_errors }}</p>
+            {% endif %}
+
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+
+                {{ form.username }}
+                {{ form.password }}
+
+                <button class="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600">
+                    Sign In
+                </button>
+            </form>
+        </div>
+        </div>
 
 {% endblock content %}
