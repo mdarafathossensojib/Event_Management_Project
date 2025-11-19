@@ -16,9 +16,8 @@ class Event(models.Model):
     time = models.TimeField()
     location = models.CharField(max_length=255)
     asset = models.ImageField(upload_to='event_asset', blank=True, null=True, default='event_asset/default_img.jpg')
-    user = models.ManyToManyField(User, related_name='user')
+    user = models.ManyToManyField(User, related_name='event_users')
 
     def __str__(self):
         return self.name
     
-
