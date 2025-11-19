@@ -30,7 +30,7 @@
             <ul class="space-y-1">
                 {% for participant in event.user.all %}
                 <li class="flex justify-between items-center p-2 bg-gray-50 rounded">
-                    <span class="font-medium text-gray-800">{{ participant.name }}</span>
+                    <span class="font-medium text-gray-800">{{ participant.first_name }} {{ participant.last_name }}</span>
                     <span class="text-gray-500">{{ participant.email }}</span>
                 </li>
                 {% endfor %}

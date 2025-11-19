@@ -57,9 +57,9 @@
           class="hidden md:flex items-center gap-8 font-semibold text-gray-700"
         >
         {% if request.user.is_superuser %}
-            <a href="{% url 'admin-dashboard' %}" class="hover:text-orange-500">Admin Dashboard</a>
+            <a href="{% url 'admin-dashboard' %}" class="hover:text-orange-500">ADMIN DASHBOARD</a>
         {% else %}
-            <a href="{% url 'dashboard' %}" class="hover:text-orange-500">Dashboard</a>
+            <a href="{% url 'dashboard' %}" class="hover:text-orange-500">DASHBOARD</a>
         {% endif %}
           <a href="{% url 'home' %}" class="hover:text-orange-500">EVENTS</a>
           <a href="{% url 'participants' %}" class="hover:text-orange-500"
@@ -102,9 +102,9 @@
         class="hidden md:hidden bg-white shadow flex flex-col p-4 space-y-3 text-gray-700 font-semibold"
       >
         {% if request.user.is_superuser %}
-            <a href="{% url 'admin-dashboard' %}" class="hover:text-orange-500">Admin Dashboard</a>
+            <a href="{% url 'admin-dashboard' %}" class="hover:text-orange-500">ADMIN DASHBOARD</a>
         {% else %}
-            <a href="{% url 'dashboard' %}" class="hover:text-orange-500">Dashboard</a>
+            <a href="{% url 'dashboard' %}" class="hover:text-orange-500">DASHBOARD</a>
         {% endif %}
           <a href="{% url 'home' %}" class="hover:text-orange-500">EVENTS</a>
           <a href="{% url 'participants' %}" class="hover:text-orange-500"
