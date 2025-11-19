@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User, Group, Permission
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -15,17 +15,10 @@ class Event(models.Model):
     date = models.DateField()
     time = models.TimeField()
     location = models.CharField(max_length=255)
-    asset = models.ImageField(upload_to='event_asset', blank=True, null=True) #default='tasks_asset/default_img.jpg'
+    asset = models.ImageField(upload_to='event_asset', blank=True, null=True, default='event_asset/default_img.jpg')
+    user = models.ManyToManyField(User, related_name='user')
 
     def __str__(self):
         return self.name
     
 
-
-class Participant(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    events = models.ManyToManyField(Event, related_name='participants')
-
-    def __str__(self):
-        return self.name

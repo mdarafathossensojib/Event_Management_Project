@@ -8,7 +8,7 @@ def home(request):
     today = timezone.now().date()
 
     # Base Query
-    base_query = Event.objects.select_related('category').prefetch_related('participants')
+    base_query = Event.objects.select_related('category').prefetch_related('user')
 
     # Start with base queryset
     events = base_query
@@ -46,11 +46,11 @@ def home(request):
         events = events.filter(date__lte=date_to)
 
 
-    events = events.annotate(participant_count=Count('participants'))
+    events = events.annotate(participant_count=Count('user'))
 
     # For sidebar upcoming events
     up_events = base_query.filter(date__gt=today).annotate(
-        participant_count=Count('participants')
+        participant_count=Count('user')
     )
 
     context = {

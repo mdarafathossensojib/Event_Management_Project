@@ -1,7 +1,35 @@
 {% extends "base.html" %}
-{% block title %} My Account {% endblock title %} 
+{% block title %} Admin Dashboard {% endblock title %} 
 
 {% block content %}
+
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+        <div class="mb-4 p-3 bg-gray-200-200 rounded">
+            <div class="flex space-x-4">
+            <a href="{% url 'event-create' %}"
+              class="text-gray-600 hover:text-gray-800"
+              >Create Event</a
+            >
+            <a href="{% url 'events' %}"
+              class="text-gray-600 hover:text-gray-800"
+              >Update Event</a
+            >
+            <a href="{% url 'events' %}"
+              class="text-gray-600 hover:text-gray-800"
+              >Delete Event</a
+            >
+            <a href="{% url 'create-group' %}"
+              class="text-gray-600 hover:text-gray-800"
+              >Create Group</a>
+              
+            <a href="{% url 'group-list' %}" class="text-gray-600 hover:text-gray-800"
+              >Groups</a>
+          </div>
+        </div>
 
         <div class="container mx-auto p-6">
             <div class="overflow-x-auto">
@@ -52,7 +80,7 @@
                     <td class="px-4 py-4 whitespace-nowrap">
                         <a
                         href="{% url 'assign-role' user.id %}"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                        class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded"
                         >
                         Change Role
                         </a>

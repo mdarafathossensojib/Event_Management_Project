@@ -124,3 +124,10 @@ class CreateGroupForm(forms.ModelForm):
     class Meta:
         model = Group
         fields = ['name', 'permissions']
+
+        widgets = {
+                'name': forms.TextInput(attrs={
+                    'class': 'w-full px-3 py-2 mt-1 mb-2 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500',
+                    'placeholder': 'Enter Group Name'
+                })
+        }
