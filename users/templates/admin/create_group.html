@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %} Create Group {% endblock title %} 
+
+{% block content %}
+
+    <div class="w-1/2 mx-auto p-5 my-10">
+        <ul>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        </ul>
+
+        <form action="" method="POST">
+            {% csrf_token %}
+            {{form}}
+
+            <button class="px-3 py-1 my-5 bg-orange-500 text-white rounded-md" type="submit">Create Group</button>
+        </form>
+    </div>
+
+{% endblock content %}

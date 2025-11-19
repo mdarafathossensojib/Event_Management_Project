@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %} Assign Role {% endblock title %} 
+
+{% block content %}
+
+        <div class="w-1/2 mx-auto p-10 my-10 bg-gray-200 rounded-md text-center">
+            <ul>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ msg }}</div>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{form}}
+
+                <button class="px-3 py-1 mt-4 bg-orange-500 text-white rounded-md" type="submit">Assign Role</button>
+            </form>
+        </div>
+
+{% endblock content %}

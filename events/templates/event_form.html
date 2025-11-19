@@ -14,7 +14,7 @@
 <div class="bg-white p-8 rounded shadow w-full md:w-2/3 mx-auto">
 
   <!--  Main Event Form -->
-  <form method="POST" class="space-y-5 mb-10">
+  <form method="POST" class="space-y-5 mb-10" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
 

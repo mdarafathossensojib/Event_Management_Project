@@ -1,16 +1,18 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.db.models import Count
-from events.forms import EventForm, ParticipantForm, CategoryForm
-from events.models import Event, Participant, Category
+from events.forms import EventForm, CategoryForm
+from events.models import Event, Category
 from django.utils import timezone
+from users.views import is_admin
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 
 
-def dashboard(request):
+def events(request):
     today = timezone.now().date()
 
     # Base Query
-    base_query = Event.objects.select_related('category').prefetch_related('participants')
+    base_query = Event.objects.select_related('category').prefetch_related('user')
 
     # Start with base queryset
     events = base_query
@@ -48,11 +50,11 @@ def dashboard(request):
         events = events.filter(date__lte=date_to)
 
 
-    events = events.annotate(participant_count=Count('participants'))
+    events = events.annotate(participant_count=Count('user'))
 
     # For sidebar upcoming events
     up_events = base_query.filter(date__gt=today).annotate(
-        participant_count=Count('participants')
+        participant_count=Count('user')
     )
 
     context = {
@@ -65,49 +67,50 @@ def dashboard(request):
         'filter_type': filter_type,
     }
 
-    return render(request, 'dashboard.html', context)
+    return render(request, 'events.html', context)
 
 
 
 def details(request, id):
     # Get event with related category and participants, and annotate participant count
 
-    event = get_object_or_404(Event.objects.select_related('category').prefetch_related('participants').annotate(participant_count=Count('participants')), id=id)
+    event = get_object_or_404(Event.objects.select_related('category').prefetch_related('user').annotate(participant_count=Count('user')), id=id)
 
     return render(request, 'details.html', {'event': event})
 
+@login_required
 def event_create(request):
     # Create Event
-
     event_form = EventForm()
 
     if request.method == 'POST':
-        event_form = EventForm(request.POST)
+        event_form = EventForm(request.POST, request.FILES)
         if event_form.is_valid():
             event = event_form.save()
             # Add participants to the event
-            for p in event_form.cleaned_data['participants']:
+            for p in event_form.cleaned_data['user']:
                 p.events.add(event)
             messages.success(request, 'Event created successfully!')
-            return redirect('dashboard')
+            return redirect('home')
 
     context = {'form': event_form}
     return render(request, 'event_form.html', context)
 
+@login_required
 def event_update(request, id):
     # Update Event
     event = Event.objects.get(id=id)
     event_form = EventForm(instance=event)
-    event_form.fields['participants'].initial = event.participants.all()
+    event_form.fields['user'].initial = event.user.all()
 
     if request.method == 'POST':
-        event_form = EventForm(request.POST, instance=event)
+        event_form = EventForm(request.POST, request.FILES, instance=event)
         if event_form.is_valid():
             event = event_form.save()
             # Update participants
-            event.participants.clear()
+            event.user.clear()
             # Add selected participants
-            for p in event_form.cleaned_data['participants']:
+            for p in event_form.cleaned_data['user']:
                 p.events.add(event)
 
             messages.success(request, 'Event updated successfully!')
@@ -115,6 +118,7 @@ def event_update(request, id):
 
     return render(request, 'update_form.html', {'form': event_form})
 
+@login_required
 def event_delete(request, id):
     # Delete Event
     if request.method == 'POST':
@@ -126,19 +130,6 @@ def event_delete(request, id):
         messages.error(request, 'Invalid request method.')
 
     return render(request, 'dashboard.html')
-
-
-def participants(request):
-    # View and Create Participants
-    participants = Participant.objects.all()
-    form = ParticipantForm()
-    if request.method == 'POST':
-        form = ParticipantForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Participant created successfully!')
-            return redirect('participants')
-    return render(request, 'participant.html', {'form': form, 'participants': participants})
 
 
 def category(request):
