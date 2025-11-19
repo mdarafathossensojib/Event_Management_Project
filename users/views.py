@@ -208,6 +208,11 @@ def my_rsvps(request):
 @login_required
 def account(request, user_id):
     user = get_object_or_404(User, id=user_id)
+    if user.groups:
+        user.group_name = user.groups.first().name
+    else:
+        user.group_name = "No Group Assign"
+
     return render(request, "account.html", {"user": user})
 
 def participants(request):
