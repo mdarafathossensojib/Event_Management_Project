@@ -4,6 +4,8 @@ from django.db.models import Count
 from events.forms import EventForm, CategoryForm
 from events.models import Event, Category
 from django.utils import timezone
+from users.views import is_admin
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 
 
 def events(request):
@@ -76,6 +78,7 @@ def details(request, id):
 
     return render(request, 'details.html', {'event': event})
 
+@login_required
 def event_create(request):
     # Create Event
     event_form = EventForm()
@@ -93,6 +96,7 @@ def event_create(request):
     context = {'form': event_form}
     return render(request, 'event_form.html', context)
 
+@login_required
 def event_update(request, id):
     # Update Event
     event = Event.objects.get(id=id)
@@ -114,6 +118,7 @@ def event_update(request, id):
 
     return render(request, 'update_form.html', {'form': event_form})
 
+@login_required
 def event_delete(request, id):
     # Delete Event
     if request.method == 'POST':

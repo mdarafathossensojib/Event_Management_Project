@@ -2,6 +2,11 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto p-6 bg-white shadow rounded mt-6">
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ msg }}</div>
+        {% endfor %}
+    {% endif %}
     <!-- Event Header -->
     <div class="mb-4 border-b pb-2">
         <h1 class="text-3xl font-bold text-gray-800">{{ event.name }}</h1>
@@ -21,9 +26,9 @@
     <!-- Participants List -->
     <div>
         <h2 class="text-xl font-semibold mb-2">Participants</h2>
-        {% if event.participants.all %}
+        {% if event.user.all %}
             <ul class="space-y-1">
-                {% for participant in event.participants.all %}
+                {% for participant in event.user.all %}
                 <li class="flex justify-between items-center p-2 bg-gray-50 rounded">
                     <span class="font-medium text-gray-800">{{ participant.name }}</span>
                     <span class="text-gray-500">{{ participant.email }}</span>

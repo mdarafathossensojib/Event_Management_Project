@@ -20,7 +20,7 @@
           >
         </div>
         <div class="flex items-center gap-6">
-          <a href="#" class="flex items-center gap-1"
+          <a href="{% url 'account' request.user.id %}" class="flex items-center gap-1"
             ><span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
 </svg>
@@ -56,9 +56,13 @@
         <nav
           class="hidden md:flex items-center gap-8 font-semibold text-gray-700"
         >
-          <a href="{% url 'home' %}" class="hover:text-orange-500">DASHBOARD</a>
-          <a href="{% url 'events' %}" class="hover:text-orange-500">EVENTS</a>
-          <a href="{% url 'home' %}" class="hover:text-orange-500"
+        {% if request.user.is_superuser %}
+            <a href="{% url 'admin-dashboard' %}" class="hover:text-orange-500">Admin Dashboard</a>
+        {% else %}
+            <a href="{% url 'dashboard' %}" class="hover:text-orange-500">Dashboard</a>
+        {% endif %}
+          <a href="{% url 'home' %}" class="hover:text-orange-500">EVENTS</a>
+          <a href="{% url 'participants' %}" class="hover:text-orange-500"
             >PARTICIPANTS</a
           >
           <a href="{% url 'category' %}" class="hover:text-orange-500">CATEGORIES</a>
@@ -66,6 +70,7 @@
 
         <!-- Icons -->
         <div class="flex items-center gap-4">
+          <form action="{% url 'account' request.user.id %}">
           <button
             class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center"
           >
@@ -73,7 +78,7 @@
   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
 </svg>
 
-          </button>
+          </button></form>
           <button
             class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center"
           >
@@ -96,9 +101,15 @@
         id="mobile-menu"
         class="hidden md:hidden bg-white shadow flex flex-col p-4 space-y-3 text-gray-700 font-semibold"
       >
-        <a href="{% url 'home' %}" class="hover:text-orange-500">DASHBOARD</a>
-        <a href="{% url 'events' %}" class="hover:text-orange-500">EVENTS</a>
-        <a href="{% url 'home' %}" class="hover:text-orange-500">PARTICIPANTS</a>
-        <a href="{% url 'category' %}" class="hover:text-orange-500">CATEGORIES</a>
+        {% if request.user.is_superuser %}
+            <a href="{% url 'admin-dashboard' %}" class="hover:text-orange-500">Admin Dashboard</a>
+        {% else %}
+            <a href="{% url 'dashboard' %}" class="hover:text-orange-500">Dashboard</a>
+        {% endif %}
+          <a href="{% url 'home' %}" class="hover:text-orange-500">EVENTS</a>
+          <a href="{% url 'participants' %}" class="hover:text-orange-500"
+            >PARTICIPANTS</a
+          >
+          <a href="{% url 'category' %}" class="hover:text-orange-500">CATEGORIES</a>
       </div>
     </header>
