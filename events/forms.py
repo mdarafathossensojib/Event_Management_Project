@@ -1,6 +1,5 @@
 from django import forms
 from events.models import Event, Category
-from django.contrib.auth.models import User, Group, Permission
 
 class CategoryForm(forms.ModelForm):
     class Meta:

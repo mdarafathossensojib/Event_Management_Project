@@ -5,112 +5,69 @@
 {% block content %}
 
 {% load static %}
-<!-- Dashboard -->
-    <div class="max-w-7xl mx-auto grid grid-cols-12 h-32">
-      <div class="col-span-12 lg:col-span-7 flex items-center px-4">
-        <p class="text-3xl text-500">Events</p>
-      </div>
-      <div class="col-span-12 lg:col-span-5 flex items-center justify-center px-4">
-        <a href="{% url 'event-create' %}" class="bg-orange-600 rounded-lg text-white text-xl py-2 px-5">Create Event</a>
-      </div>
+ <section class="relative">
+    <img src="{% static 'images/home.jpg' %}" class="w-full h-[500px] object-cover opacity-90">
+    <div class="absolute inset-0 bg-black/40"></div>
+
+    <div class="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-4">
+      <h1 class="text-4xl md:text-6xl font-bold mb-4">Manage Your Events Seamlessly</h1>
+      <p class="text-lg md:text-xl max-w-2xl">
+        Create, manage, and collaborate on your events with ease.
+      </p>
+
+      <a href="#events" class="mt-6 bg-orange-600 px-6 py-3 rounded-lg text-white text-lg hover:bg-orange-700">
+        Explore Events
+      </a>
     </div>
+  </section>
 
-  <!-- Main Container -->
-  <div class="max-w-7xl mx-auto grid grid-cols-12 gap-6 pt-4">
+  <!-- Upcoming Events -->
+  <section id="events" class="container mx-auto px-4 py-16">
+    <h2 class="text-3xl font-bold text-gray-800 mb-10 text-center">Upcoming Events</h2>
 
-    <!-- Left Section (8 columns) -->
-    <div class="col-span-12 lg:col-span-8">
+    <div class="grid md:grid-cols-3 gap-8">
 
-
-      <!-- Top Buttons -->
-      <div class="p-4 rounded-xl flex gap-2 m-0">
-        <a href="{% url 'events' %}" class="bg-gray-100 px-2 py-1 rounded-lg hover:bg-gray-200">All</a>
-        <a href="{% url 'events' %}?type=today" class="bg-gray-100 px-2 py-1 rounded-lg hover:bg-gray-200">Today</a>
-        <a href="{% url 'events' %}?type=upcoming" class="bg-gray-100 px-2 py-1 rounded-lg hover:bg-gray-200">Coming</a>
-        <a href="{% url 'events' %}?type=recent" class="bg-gray-200 px-2 py-1 rounded-lg hover:bg-gray-200">Recent</a>
-      </div>
-
-      <!-- Events List -->
-      <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-        <h2 class="text-2xl font-bold mb-2">Events</h2>
-
-        {% for event in events %}
-          <div class="bg-gray-200 p-3 rounded-lg grid grid-cols-12 gap-4">
-            <div class="col-span-12 lg:col-span-5">
-              <img src="{% static "images/events.jpg" %}" alt="Events Img" class="" >
-            </div>
-            <div class="col-span-12 lg:col-span-7 gap-2 mt-2 space-y-2">
-              <h2 class="text-xl font-bold">Event Name: {{event.name}}</h2>
-              <p class="text-md">Category: {{event.category.name}} </p>
-              <p class="text-md">Date: {{event.date}}</p>
-              <p class="text-md">Location: {{event.location}}</p>
-              <p class="text-md">No of Participants: {{event.participant_count}}</p>
-              <div class="mt-2 pt-4 flex gap-2">
-                <a href="{% url 'details' event.id %}" class="bg-orange-600 rounded-lg text-white py-2 px-3">Details</a>
-                <a href="{% url 'event-update' event.id %}" class="bg-orange-600 rounded-lg text-white py-2 px-3">Update</a>
-                <form action="{% url 'event-delete' event.id %}" method="POST">
-                  {% csrf_token %}
-                  <button type="submit" class="bg-orange-600 rounded-lg text-white py-2 px-3">Delete</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
-
-    </div>
-
-    <!-- Right Section (4 columns) -->
-    <div class="col-span-12 lg:col-span-4 space-y-4">
-
-      <div class="p-4 rounded-lg text-center bg-gray-300 p-4 rounded-xl space-y-4">
-        <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-        <h2 class="text-lg mb-1">Search By Name</h2>
-          <form method="GET" class="flex gap-2 mb-6 justify-center">
-            <input type="text" name="name" value="{{ name_query }}"
-                  placeholder="Search events..."
-                  class="border px-3 py-2 w-64 rounded">
-            <button class="bg-orange-600 text-white px-4 py-2 rounded">Search</button>
+      {% for up_event in up_events %}
+      <!-- Event Card -->
+      <div class="bg-white rounded-xl shadow hover:shadow-lg transition">
+        <img src="{{up_event.asset.url}}" class="rounded-t-xl w-full" />
+        <div class="p-5">
+          <h3 class="text-xl font-semibold">{{up_event.name}}</h3>
+          <p class="text-gray-600 mt-2">Date: {{up_event.date}}</p>
+          <form action="{% url 'details' up_event.id %}" method="get">
+          <button class="mt-4 bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">
+            View Details
+          </button>
           </form>
-        <h2 class="text-lg mb-1">Search By Category</h2>
-        <form method="GET" class="flex gap-2 mb-6 justify-center">
-          <input type="text" name="category" value="{{ cat_query }}"
-                placeholder="Search category..."
-                class="border px-3 py-2 w-64 rounded">
-          <button class="bg-orange-600 text-white px-4 py-2 rounded">Search</button>
-        </form>
-        <h2 class="text-lg mb-1">Search By Date Range</h2>
-        <form method="GET" class="mb-6">
-          <input type="date" name="date_from" value="{{ date_from }}"
-                class="border px-3 py-2 rounded">
-          <input type="date" name="date_to" value="{{ date_to }}"
-                class="border px-3 py-2 rounded">
-          <button class="bg-orange-600 text-white px-4 py-2 rounded mt-3">Search</button>
-        </form>
         </div>
-
       </div>
-      <div class="p-4 rounded-lg text-center">
-        <!-- Upcoming Events List -->
-      <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-        <h2 class="text-xl font-bold mb-2">Upcoming Events</h2>
-
-        <div class="bg-gray-200 p-3 rounded-lg flex justify-between">
-          <div class="font-bold">Event Name</div>
-          <div class="font-bold">Event Date</div>
-        </div>
-        {% for up_event in up_events %}
-        <div class="bg-gray-200 p-3 rounded-lg flex justify-between">
-          <div>{{up_event.name}}</div>
-          <div>{{up_event.date}}</div>
-        </div>
-        {% endfor %}
-      </div>
-      </div>
-
+      {% endfor %}
     </div>
+  </section>
 
-  </div>
+  <!-- About Section -->
+  <section class="bg-white py-16">
+    <div class="container mx-auto px-4 flex flex-col md:flex-row items-center gap-10">
+      
+      <img src="{% static 'images/about.jpg' %}" class="rounded-xl shadow w-full md:w-1/2" />
+
+      <div class="md:w-1/2">
+        <h2 class="text-3xl font-bold mb-4">Why Choose EventMaster?</h2>
+        <p class="text-gray-600 leading-relaxed">
+          EventMaster helps you organize events efficiently with tools designed for simplicity.
+          Whether you're managing a corporate meetup or a music festival, our platform makes planning effortless.
+        </p>
+
+        <ul class="mt-5 space-y-2 text-gray-700">
+          <li>✔ Easy Event Creation</li>
+          <li>✔ Participant Management</li>
+          <li>✔ File & Media Upload</li>
+          <li>✔ Real-time Notifications</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
 
     {% comment %} Messages Pop-Up Model {% endcomment %}
       {% if messages %}

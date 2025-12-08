@@ -9,7 +9,7 @@
                 <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ msg }}</div>
             {% endfor %}
         {% endif %}
-        
+        </div>
         <div class="w-1/2 mx-auto my-10 bg-gray-200 p-6 rounded-lg shadow">
             <h1 class="text-2xl font-bold mb-5 text-center">Sign In</h1>
 
@@ -27,7 +27,8 @@
                     Sign In
                 </button>
             </form>
-        </div>
+
+            <a class='hover:text-orange-500 mt-3' href="{% url 'password-reset' %}">Forget Password?</a>
         </div>
 
 {% endblock content %}

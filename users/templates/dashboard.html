@@ -1,19 +1,9 @@
 {% extends "base.html" %}
-{% block title %} Dashboard {% endblock title %} 
+{% block title %} Events {% endblock title %} 
 
 {% block content %} 
 
 {% load static %}
-
-<!-- Dashboard -->
-    <div class="max-w-7xl mx-auto grid grid-cols-12 h-32">
-      <div class="col-span-12 lg:col-span-7 flex items-center px-4">
-        <p class="text-3xl text-500">Dashboard</p>
-      </div>
-      <div class="col-span-12 lg:col-span-5 flex items-center justify-center px-4">
-        <a href="{% url 'my-rsvps' %}" class="bg-orange-600 rounded-lg text-white text-xl py-2 px-5">RSVP</a>
-      </div>
-    </div>
 
   <!-- Main Container -->
   <div class="max-w-7xl mx-auto grid grid-cols-12 gap-6 pt-4">
