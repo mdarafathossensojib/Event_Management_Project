@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User, Group, Permission
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -16,7 +16,7 @@ class Event(models.Model):
     time = models.TimeField()
     location = models.CharField(max_length=255)
     asset = models.ImageField(upload_to='event_asset', blank=True, null=True, default='event_asset/default_img.jpg')
-    user = models.ManyToManyField(User, related_name='event_users')
+    user = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='event_users')
 
     def __str__(self):
         return self.name

@@ -1,15 +1,103 @@
 {% extends "base.html" %}
+{% block title %} Update Profile {% endblock %}
 {% block content %}
-    <div class='mx-auto w-1/2 my-9'>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="px-2 py-1 {% if message.tags == 'success' %}bg-green-500{% endif %} ">{{message}}</div>
-            {% endfor %}
-        {% endif %}
-        <form method='POST' enctype='multipart/form-data'>
-            {% csrf_token %}
-            {{ form }}
-            <button class='bg-blue-500 px-2 py-1 rounded text-white mt-3' type="submit">Update Profile</button>
-        </form>
+{% if messages %}
+    {% for message in messages %}
+        <div class="px-2 py-1 {% if message.tags == 'success' %}bg-green-500{% endif %} ">{{message}}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='bg-gray-100 min-h-screen flex'>
+  <!-- Sidebar -->
+  {% include "accounts/side_bar.html" %}
+  <!-- Main Content -->
+  <main class="flex-1">
+
+    <div class="p-6">
+  <!-- Page Title -->
+  <h2 class="text-2xl font-semibold text-gray-800">Account Information</h2>
+  <p class="text-gray-500 mb-8">Edit your profile quickly</p>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Form -->
+      <form method="POST" enctype="multipart/form-data" class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
+        {% csrf_token %}
+
+        <h2 class="text-2xl font-semibold mb-6">Update Profile</h2>
+
+        <!-- IMAGE SECTION -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Profile Image -->
+            <div>
+                <label class="block font-medium mb-2">Profile Image</label>
+
+                {% if form.instance.profile_image %}
+                    <img src="{{ form.instance.profile_image.url }}" class="w-24 h-24 rounded-full mb-3 object-cover">
+                {% endif %}
+
+                <input type="file" name="profile_image"
+                    class="border p-2 w-full rounded-md">
+            </div>
+
+            <!-- Cover Image -->
+            <div>
+                <label class="block font-medium mb-2">Cover Image</label>
+
+                {% if form.instance.cover_image %}
+                    <img src="{{ form.instance.cover_image.url }}" class="w-full h-28 rounded-md mb-3 object-cover">
+                {% endif %}
+
+                <input type="file" name="cover_image"
+                    class="border p-2 w-full rounded-md">
+            </div>
+        </div>
+
+        <!-- TEXT FIELDS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+
+            <div>
+                <label class="block font-medium mb-1">First Name</label>
+                {{ form.first_name }}
+            </div>
+
+            <div>
+                <label class="block font-medium mb-1">Last Name</label>
+                {{ form.last_name }}
+            </div>
+
+            <div>
+                <label class="block font-medium mb-1">Email</label>
+                {{ form.email }}
+            </div>
+
+            <div>
+                <label class="block font-medium mb-1">Phone</label>
+                {{ form.phone }}
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block font-medium mb-1">Bio</label>
+                {{ form.bio }}
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block font-medium mb-1">Address</label>
+                {{ form.address }}
+            </div>
+
+        </div>
+
+        <button class="mt-6 bg-orange-500 px-4 py-2 text-white rounded hover:bg-orange-600">
+            Update Profile
+        </button>
+
+    </form>
+
     </div>
+
+  </div>
+</div>
+  </main>
+  </section>
 {% endblock content %}

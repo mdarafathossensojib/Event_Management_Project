@@ -17,6 +17,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+AUTH_USER_MODEL = 'users.CustomUser'
 CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com', 'http://127.0.0.1:8000']
 
 
@@ -97,7 +98,7 @@ WSGI_APPLICATION = 'even_management.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgresql://event_management_db_nrc0_user:mTJFJoLs8KDSkVVYqDo0rlWaP5lBhG8T@dpg-d490mi49c44c73bdsd80-a.oregon-postgres.render.com/event_management_db_nrc0',
+        default='postgresql://event_db_5vyu_user:fDNEvH0ziyOBwK3LxWwz5e3zIPZkpm7Z@dpg-d4rf096r433s73fp9bo0-a.oregon-postgres.render.com/event_db_5vyu',
         conn_max_age=600
     )
 }

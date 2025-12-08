@@ -20,7 +20,7 @@
   <div class="max-w-7xl mx-auto grid grid-cols-12 gap-6 pt-4">
 
     <!-- Left Section (8 columns) -->
-    <div class="col-span-12 lg:col-span-8">
+    <div class="col-span-12">
 
 
       <!-- Top Buttons -->
@@ -47,7 +47,6 @@
               <p class="text-md">Location: {{event.location}}</p>
               <p class="text-md">No of Participants: {{event.participant_count}}</p>
               <div class="mt-2 pt-4 flex gap-2">
-                <a href="{% url 'details' event.id %}" class="bg-orange-600 rounded-lg text-white py-2 px-3">Details</a>
                 <a href="{% url 'event-update' event.id %}" class="bg-orange-600 rounded-lg text-white py-2 px-3">Update</a>
                 <form action="{% url 'event-delete' event.id %}" method="POST">
                   {% csrf_token %}
@@ -60,57 +59,6 @@
       </div>
 
     </div>
-
-    <!-- Right Section (4 columns) -->
-    <div class="col-span-12 lg:col-span-4 space-y-4">
-
-      <div class="p-4 rounded-lg text-center bg-gray-300 p-4 rounded-xl space-y-4">
-        <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-        <h2 class="text-lg mb-1">Search By Name</h2>
-          <form method="GET" class="flex gap-2 mb-6 justify-center">
-            <input type="text" name="name" value="{{ name_query }}"
-                  placeholder="Search events..."
-                  class="border px-3 py-2 w-64 rounded">
-            <button class="bg-orange-600 text-white px-4 py-2 rounded">Search</button>
-          </form>
-        <h2 class="text-lg mb-1">Search By Category</h2>
-        <form method="GET" class="flex gap-2 mb-6 justify-center">
-          <input type="text" name="category" value="{{ cat_query }}"
-                placeholder="Search category..."
-                class="border px-3 py-2 w-64 rounded">
-          <button class="bg-orange-600 text-white px-4 py-2 rounded">Search</button>
-        </form>
-        <h2 class="text-lg mb-1">Search By Date Range</h2>
-        <form method="GET" class="mb-6">
-          <input type="date" name="date_from" value="{{ date_from }}"
-                class="border px-3 py-2 rounded">
-          <input type="date" name="date_to" value="{{ date_to }}"
-                class="border px-3 py-2 rounded">
-          <button class="bg-orange-600 text-white px-4 py-2 rounded mt-3">Search</button>
-        </form>
-        </div>
-
-      </div>
-      <div class="p-4 rounded-lg text-center">
-        <!-- Upcoming Events List -->
-      <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-        <h2 class="text-xl font-bold mb-2">Upcoming Events</h2>
-
-        <div class="bg-gray-200 p-3 rounded-lg flex justify-between">
-          <div class="font-bold">Event Name</div>
-          <div class="font-bold">Event Date</div>
-        </div>
-        {% for up_event in up_events %}
-        <div class="bg-gray-200 p-3 rounded-lg flex justify-between">
-          <div>{{up_event.name}}</div>
-          <div>{{up_event.date}}</div>
-        </div>
-        {% endfor %}
-      </div>
-      </div>
-
-    </div>
-
   </div>
 
     {% comment %} Messages Pop-Up Model {% endcomment %}

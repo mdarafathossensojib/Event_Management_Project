@@ -1,8 +1,11 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 import re
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import Group, Permission
 from django import forms
+from users.models import CustomUser
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class CustomRegistrationForm(forms.ModelForm):
     password = forms.CharField(
@@ -91,13 +94,13 @@ class LoginForm(AuthenticationForm):
 
     username = forms.CharField(
         widget=forms.TextInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
             'placeholder': 'Enter username'
         })
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
             'placeholder': 'Enter password'
         })
     )
@@ -131,3 +134,90 @@ class CreateGroupForm(forms.ModelForm):
                     'placeholder': 'Enter Group Name'
                 })
         }
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        label="Current Password",
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'placeholder': 'Enter current password'
+        })
+    )
+    new_password1 = forms.CharField(
+        label="New Password",
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'placeholder': 'Enter new password'
+        })
+    )
+    new_password2 = forms.CharField(
+        label="Confirm New Password",
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'placeholder': 'Re-enter new password'
+        })
+    )
+
+class CustomPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(
+        label="Email Address",
+        widget=forms.EmailInput(attrs={
+            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'placeholder': 'Enter your email'
+        })
+    )
+class CustomPasswordConfirmForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        label="New Password",
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'placeholder': 'Enter new password'
+        })
+    )
+    new_password2 = forms.CharField(
+        label="Confirm Password",
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'placeholder': 'Re-enter new password'
+        })
+    )
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = [
+            'profile_image',
+            'cover_image',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'bio',
+            'address',
+        ]
+
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+            }),
+            'bio': forms.Textarea(attrs={
+                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500',
+                'rows': 4
+            }),
+            'address': forms.TextInput(attrs={
+                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+            }),
+        }
+
+
+

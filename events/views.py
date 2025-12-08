@@ -6,6 +6,9 @@ from events.models import Event, Category
 from django.utils import timezone
 from users.views import is_admin
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
+from django.utils.decorators import method_decorator
+from django.urls import reverse_lazy
 
 
 def events(request):
@@ -70,76 +73,65 @@ def events(request):
     return render(request, 'events.html', context)
 
 
+class DetailsView(TemplateView):
+    template_name = 'details.html'
 
-def details(request, id):
-    # Get event with related category and participants, and annotate participant count
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        event_id = self.kwargs.get('id')
+        event = get_object_or_404(Event.objects.select_related('category').prefetch_related('user').annotate(participant_count=Count('user')), id=event_id)
+        context['event'] = event
+        return context
 
-    event = get_object_or_404(Event.objects.select_related('category').prefetch_related('user').annotate(participant_count=Count('user')), id=id)
+@method_decorator(login_required, name='dispatch')
+class EventCreateView(CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'event_form.html'
+    success_url = reverse_lazy('events')
 
-    return render(request, 'details.html', {'event': event})
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.user.add(*form.cleaned_data['user'])
+        messages.success(self.request, 'Event created successfully!')
+        return response
 
-@login_required
-def event_create(request):
-    # Create Event
-    event_form = EventForm()
+@method_decorator(login_required, name='dispatch')
+class EventUpdateView(UpdateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'update_form.html'
+    success_url = reverse_lazy('events')
+    pk_url_kwarg = 'id'
 
-    if request.method == 'POST':
-        event_form = EventForm(request.POST, request.FILES)
-        if event_form.is_valid():
-            event = event_form.save()
-            # Add participants to the event
-            for p in event_form.cleaned_data['user']:
-                p.events.add(event)
-            messages.success(request, 'Event created successfully!')
-            return redirect('home')
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.user.set(form.cleaned_data['user'])
+        messages.success(self.request, 'Event Updated successfully!')
+        return response
 
-    context = {'form': event_form}
-    return render(request, 'event_form.html', context)
+@method_decorator(login_required, name='dispatch')
+class EventDeleteView(DeleteView):
+    model = Event
+    pk_url_kwarg = 'id'
+    success_url = reverse_lazy('events')
 
-@login_required
-def event_update(request, id):
-    # Update Event
-    event = Event.objects.get(id=id)
-    event_form = EventForm(instance=event)
-    event_form.fields['user'].initial = event.user.all()
-
-    if request.method == 'POST':
-        event_form = EventForm(request.POST, request.FILES, instance=event)
-        if event_form.is_valid():
-            event = event_form.save()
-            # Update participants
-            event.user.clear()
-            # Add selected participants
-            for p in event_form.cleaned_data['user']:
-                p.events.add(event)
-
-            messages.success(request, 'Event updated successfully!')
-            return redirect('dashboard')
-
-    return render(request, 'update_form.html', {'form': event_form})
-
-@login_required
-def event_delete(request, id):
-    # Delete Event
-    if request.method == 'POST':
-        event = Event.objects.get(id=id)
-        event.delete()
+    def delete(self, request, *args, **kwargs):
         messages.success(request, 'Event deleted successfully!')
-        return redirect('dashboard')
-    else:
-        messages.error(request, 'Invalid request method.')
+        return super().delete(request, *args, **kwargs)
 
-    return render(request, 'dashboard.html')
+@method_decorator(login_required, name='dispatch')
+class CategoryCreateView(CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'category.html'
+    success_url = reverse_lazy('category')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = Category.objects.all()
+        return context
 
-def category(request):
-    # View and Create Categories
-    category = Category.objects.all()
-    form = CategoryForm()
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Category created successfully!')
-            return redirect('category')
-    return render(request, 'category.html', {'form': form, 'category': category})
+    def form_valid(self, form):
+        messages.success(self.request, 'Category created successfully!')
+        return super().form_valid(form)
