@@ -1,0 +1,81 @@
+<footer class="bg-zinc-900 border-t border-zinc-800 mt-20">
+  <div class="container mx-auto px-4 lg:px-8 py-16">
+
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-8">
+
+      <!-- Brand -->
+      <div class="col-span-2">
+        <!-- Logo -->
+        <a href="{% url 'home' %}" class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <!-- icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <span class="text-xl font-bold text-white">Eventify</span>
+        </a>
+
+        <p class="text-zinc-400 mb-6 max-w-xs">
+          Discover, organize and manage events بسهولة.
+        </p>
+
+        <!-- Social -->
+        <div class="flex gap-4">
+          <a href="#" class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-primary">T</a>
+          <a href="#" class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-primary">F</a>
+          <a href="#" class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-primary">I</a>
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div>
+        <h4 class="text-white font-semibold mb-4">Product</h4>
+        <ul class="space-y-2 text-zinc-400">
+          <li><a href="#">Browse Events</a></li>
+          <li><a href="#">Create Event</a></li>
+          <li><a href="#">Pricing</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold mb-4">Company</h4>
+        <ul class="space-y-2 text-zinc-400">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold mb-4">Support</h4>
+        <ul class="space-y-2 text-zinc-400">
+          <li><a href="#">Help</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold mb-4">Legal</h4>
+        <ul class="space-y-2 text-zinc-400">
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom -->
+    <div class="border-t border-zinc-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-zinc-400 text-sm">
+        © 2026 Eventify. All rights reserved.
+      </p>
+
+      <div class="flex gap-6 text-zinc-400 text-sm">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+
+  </div>
+</footer>

@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'even_management.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgresql://event_db_8gon_user:R0GEsJG2QMS8SDfiaXr9FVaibglRzxv1@dpg-d72l3seuk2gs7380limg-a.oregon-postgres.render.com/event_db_8gon',
+        default='postgresql://event_db_ec9k_user:ihV2erPGU8OIVm5OKCbGIncKvcIHhXYI@dpg-d73r2bpr0fns73cmkqgg-a.oregon-postgres.render.com/event_db_ec9k',
         conn_max_age=600
     )
 }

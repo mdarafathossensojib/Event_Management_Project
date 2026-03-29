@@ -1,5 +1,5 @@
 from django.urls import path
-from users.views import sign_up, activate_user, dashboard, event_rsvp, ProfileView, EditProfileView, CustomLoginView, CustomPasswordChangeView, CustomPasswordResetView, CustomPasswordResetConfirmView, GroupCreateView, GroupListView, AssignRoleView, ParticipantListView, AdminDashboardView, MyRSVPSView
+from users.views import sign_up, activate_user, ProfileView, EditProfileView, CustomLoginView, CustomPasswordChangeView, CustomPasswordResetView, CustomPasswordResetConfirmView, GroupCreateView, GroupListView, AssignRoleView, ParticipantListView, AdminDashboardView
 from django.contrib.auth.views import LogoutView, PasswordChangeDoneView
 
 urlpatterns = [
@@ -11,9 +11,9 @@ urlpatterns = [
     path('admin/create-group/', GroupCreateView.as_view(), name="create-group"),
     path('admin/group-list/', GroupListView.as_view(), name="group-list"),
     path('admin/dashboard/', AdminDashboardView.as_view(), name="admin-dashboard"),
-    path('events/', dashboard, name="dashboard"),
-    path('rsvp/<int:event_id>', event_rsvp, name='rsvp'),
-    path('my-rsvps/', MyRSVPSView.as_view(), name='my-rsvps'),
+    # path('events/', dashboard, name="dashboard"),
+    # path('rsvp/<int:event_id>', event_rsvp, name='rsvp'),
+    # path('my-rsvps/', MyRSVPSView.as_view(), name='my-rsvps'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('edit-profile/', EditProfileView.as_view(), name='edit-profile'),
     path('participants/', ParticipantListView.as_view(), name='participants'),

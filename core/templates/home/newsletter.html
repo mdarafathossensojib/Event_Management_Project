@@ -1,0 +1,93 @@
+<!-- Hero Section with Search Bar -->
+<section class="relative bg-black overflow-hidden">
+  <!-- Background Gradient -->
+  <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-black to-black"></div>
+  
+  <!-- Animated Background Circles -->
+  <div class="absolute top-20 left-10 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
+  <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+  
+  <div class="relative container mx-auto px-4 lg:px-8 py-20 md:py-32">
+      <div class="max-w-3xl mx-auto text-center">
+          <!-- Badge -->
+          <div class="inline-flex items-center gap-2 bg-cyan-500/20 border border-cyan-500/20 rounded-full px-3 py-3 mb-6">
+            
+            <!-- Circle -->
+            <span class="flex items-center justify-center h-10 w-10 rounded-full">
+                
+                <!-- Icon -->
+                <svg 
+                  class="w-10 h-10 text-cyan-400" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                  </path>
+                </svg>
+
+            </span>
+
+        </div>
+          
+          <!-- Heading -->
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+              Stay in the Loop
+          </h1>
+          
+          <!-- Subheading -->
+          <p class="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
+              Subscribe to our newsletter and never miss out on the latest events, exclusive offers, and industry insights.
+          </p>
+          
+        <!-- Subscribe -->
+        <div class="max-w-md mx-auto">
+          <form method="GET" action="{% url 'home' %}" class="flex flex-col sm:flex-row gap-3">
+            
+            <!-- Input -->
+            <div class="flex-1 relative">
+              <!-- Icon -->
+              <svg 
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                </path>
+              </svg>
+
+              <input 
+                type="email" 
+                name="q"
+                placeholder="Enter your email"
+                required
+                class="w-full h-12 pl-12 pr-4 bg-gray-900 border border-gray-800 rounded-xl text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              />
+            </div>
+
+            <!-- Button -->
+            <button 
+              type="submit"
+              class="h-12 px-6 rounded-xl bg-cyan-500 text-white hover:bg-cyan-400 flex items-center justify-center gap-2 transition-all duration-300"
+            >
+              Subscribe
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M9 5l7 7-7 7">
+                </path>
+              </svg>
+            </button>
+
+          </form>
+
+  <!-- Text -->
+  <p class="text-sm text-gray-400 mt-4 text-center">
+    By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.
+  </p>
+</div>
+      </div>
+  </div>
+</section>

@@ -1,68 +1,49 @@
-from django.shortcuts import render
-from django.utils import timezone
-from events.models import Event
+from django.shortcuts import render, redirect
 from django.db.models import Count
-# Create your views here.
+from django.utils import timezone
+
+from events.models import Event, Category
+from core.models import Testimonial, SiteStats, Newsletter
+
 
 def home(request):
-    today = timezone.now().date()
+    # Featured Events
+    featured_events = Event.objects.filter(is_featured=True).annotate(
+        participant_count=Count('participants')
+    )[:5]
 
-    # Base Query
-    base_query = Event.objects.select_related('category').prefetch_related('user')
-
-    # Start with base queryset
-    events = base_query
-
-    # ---------- TYPE FILTER ----------
-    filter_type = request.GET.get('type', 'all')
-
-    if filter_type == "upcoming":
-        events = events.filter(date__gt=today)
-    elif filter_type == "recent":
-        events = events.filter(date__lt=today)
-    elif filter_type == "today":
-        events = events.filter(date=today)
-
-    # ---------- SEARCH ----------
-    name_query = request.GET.get('name', '')
-    cat_query = request.GET.get('category', '')
-    date_from = request.GET.get('date_from', '')
-    date_to = request.GET.get('date_to', '')
-
-    # Search By Name
-    if name_query:
-        events = events.filter(name__icontains=name_query)
-
-    # Search By Category
-    if cat_query:
-        events = events.filter(category__name__icontains=cat_query)
-
-    # Search By Date Range
-    if date_from and date_to:
-        events = events.filter(date__range=[date_from, date_to])
-    elif date_from:
-        events = events.filter(date__gte=date_from)
-    elif date_to:
-        events = events.filter(date__lte=date_to)
-
-
-    events = events.annotate(participant_count=Count('user'))
-
-    # For sidebar upcoming events
-    up_events = base_query.filter(date__gt=today).annotate(
-        participant_count=Count('user')
+    # Categories
+    categories = Category.objects.annotate(
+        event_count=Count('events')
     )
 
-    context = {
-        'events': events,
-        'up_events': up_events,
-        'name_query': name_query,
-        'cat_query': cat_query,
-        'date_from': date_from,
-        'date_to': date_to,
-        'filter_type': filter_type,
-    }
-    return render(request, 'home.html', context)
+    stats = SiteStats.objects.first()
 
-def no_permission(request):
-    return render(request, 'no_permission.html')
+    if not stats:
+        stats = {
+            "events_count": Event.objects.count(),
+            "users_count": Event.objects.values('participants__user').distinct().count(),
+            "cities_count": Event.objects.values('location').distinct().count(),
+            "satisfaction_rate": 98,
+        }
+
+    # Testimonials
+    testimonials = Testimonial.objects.all()[:3]
+
+    context = {
+        "featured_events": featured_events,
+        "categories": categories,
+        "stats": stats,
+        "testimonials": testimonials,
+    }
+
+    return render(request, "home.html", context)
+
+def subscribe(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        if email:
+            Newsletter.objects.get_or_create(email=email)
+
+    return redirect("home")
