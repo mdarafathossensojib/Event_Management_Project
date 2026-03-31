@@ -8,6 +8,8 @@ class CustomUser(AbstractUser):
     phone = models.CharField(max_length=15, blank=True)
     bio = models.TextField(blank=True)
     address = models.CharField(max_length=255, blank=True)
+    followers = models.IntegerField(blank=True, null=True)
+    events = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.username} Profile'

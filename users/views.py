@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib import messages
@@ -14,6 +14,10 @@ from django.conf import settings
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.views.generic import TemplateView, UpdateView, CreateView, FormView
+from datetime import timedelta
+from events.models import Event, Category, EventParticipant, SavedEvent, Notification, UserActivity
+
+
 
 User = get_user_model()
 
@@ -119,96 +123,260 @@ class GroupListView(TemplateView):
         return context
 
 
-# def dashboard(request):
-#     today = timezone.now().date()
-
-#     # Base Query
-#     base_query = Event.objects.select_related('category').prefetch_related('user')
-
-#     # Start with base queryset
-#     events = base_query
-
-#     # ---------- TYPE FILTER ----------
-#     filter_type = request.GET.get('type', 'all')
-
-#     if filter_type == "upcoming":
-#         events = events.filter(date__gt=today)
-#     elif filter_type == "recent":
-#         events = events.filter(date__lt=today)
-#     elif filter_type == "today":
-#         events = events.filter(date=today)
-
-#     # ---------- SEARCH ----------
-#     name_query = request.GET.get('name', '')
-#     cat_query = request.GET.get('category', '')
-#     date_from = request.GET.get('date_from', '')
-#     date_to = request.GET.get('date_to', '')
-
-#     # Search By Name
-#     if name_query:
-#         events = events.filter(name__icontains=name_query)
-
-#     # Search By Category
-#     if cat_query:
-#         events = events.filter(category__name__icontains=cat_query)
-
-#     # Search By Date Range
-#     if date_from and date_to:
-#         events = events.filter(date__range=[date_from, date_to])
-#     elif date_from:
-#         events = events.filter(date__gte=date_from)
-#     elif date_to:
-#         events = events.filter(date__lte=date_to)
+# Helper function for time ago
+def time_ago(dt):
+    """Format time difference"""
+    now = timezone.now()
+    diff = now - dt
+    
+    if diff.days > 7:
+        weeks = diff.days // 7
+        return f"{weeks} week{'s' if weeks > 1 else ''} ago"
+    elif diff.days > 0:
+        return f"{diff.days} day{'s' if diff.days > 1 else ''} ago"
+    elif diff.seconds > 3600:
+        hours = diff.seconds // 3600
+        return f"{hours} hour{'s' if hours > 1 else ''} ago"
+    elif diff.seconds > 60:
+        minutes = diff.seconds // 60
+        return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
+    else:
+        return "Just now"
 
 
-#     events = events.annotate(participant_count=Count('user'))
+# Dashboard Views
+@login_required
+def dashboard(request):
+    """Dashboard home page"""
+    user = request.user
+    
+    # Get upcoming RSVPs (events user is going to)
+    upcoming_rsvps = EventParticipant.objects.filter(
+        user=user,
+        event__date__gte=timezone.now().date(),
+        status='going'
+    ).select_related('event').order_by('event__date')[:3]
+    
+    # Get saved events count
+    saved_count = SavedEvent.objects.filter(user=user).count()
+    
+    # Get attended events count (past events with status attended)
+    attended_count = EventParticipant.objects.filter(
+        user=user,
+        event__date__lt=timezone.now().date(),
+        status='attended'
+    ).count()
+    
+    # Get upcoming events count
+    upcoming_count = EventParticipant.objects.filter(
+        user=user,
+        event__date__gte=timezone.now().date(),
+        status='going'
+    ).count()
+    
+    # Calculate new RSVPs this week
+    week_ago = timezone.now() - timedelta(days=7)
+    new_this_week = EventParticipant.objects.filter(
+        user=user,
+        joined_at__gte=week_ago
+    ).count()
+    
+    # New saved events this week
+    new_saved = SavedEvent.objects.filter(
+        user=user,
+        created_at__gte=week_ago
+    ).count()
+    
+    # Recent activities
+    recent_activities = UserActivity.objects.filter(
+        user=user
+    ).select_related('event')[:5]
+    
+    # Format activities for display
+    formatted_activities = []
+    for activity in recent_activities:
+        formatted_activities.append({
+            'action': activity.get_activity_type_display(),
+            'event_title': activity.event.title,
+            'time_ago': time_ago(activity.created_at),
+        })
+    
+    context = {
+        'upcoming_rsvps': upcoming_rsvps,
+        'saved_count': saved_count,
+        'attended_count': attended_count,
+        'upcoming_count': upcoming_count,
+        'new_this_week': new_this_week,
+        'new_saved': new_saved,
+        'recent_activities': formatted_activities,
+    }
+    
+    return render(request, 'dashboard.html', context)
 
-#     # For sidebar upcoming events
-#     up_events = base_query.filter(date__gt=today).annotate(
-#         participant_count=Count('user')
-#     )
 
-#     context = {
-#         'events': events,
-#         'up_events': up_events,
-#         'name_query': name_query,
-#         'cat_query': cat_query,
-#         'date_from': date_from,
-#         'date_to': date_to,
-#         'filter_type': filter_type,
-#     }
+@login_required
+def dashboard_rsvps(request):
+    """User's RSVPs page"""
+    user = request.user
+    
+    # Get all RSVPs
+    upcoming_rsvps = EventParticipant.objects.filter(
+        user=user,
+        event__date__gte=timezone.now().date()
+    ).select_related('event').order_by('event__date')
+    
+    past_rsvps = EventParticipant.objects.filter(
+        user=user,
+        event__date__lt=timezone.now().date()
+    ).select_related('event').order_by('-event__date')
+    
+    context = {
+        'upcoming_rsvps': upcoming_rsvps,
+        'past_rsvps': past_rsvps,
+    }
+    
+    return render(request, 'dashboard/rsvps.html', context)
 
-#     return render(request, 'dashboard.html', context)
 
-# @login_required
-# def event_rsvp(request, event_id):
-#     event = Event.objects.get(id=event_id)
+@login_required
+def dashboard_saved(request):
+    """User's saved events page"""
+    user = request.user
+    
+    saved_events = SavedEvent.objects.filter(
+        user=user
+    ).select_related('event').order_by('-created_at')
+    
+    context = {
+        'saved_events': saved_events,
+    }
+    
+    return render(request, 'dashboard/saved.html', context)
 
-#     if request.user in event.user.all():
-#         messages.info(request, "You already RSVPed for this event.")
-#         return redirect('details', event.id)
 
-#     event.user.add(request.user) 
+@login_required
+def dashboard_notifications(request):
+    """User's notifications page"""
+    user = request.user
+    
+    notifications = Notification.objects.filter(
+        user=user
+    ).order_by('-created_at')
+    
+    # Mark notifications as read
+    unread_notifications = notifications.filter(is_read=False)
+    for notif in unread_notifications:
+        notif.is_read = True
+        notif.save()
+    
+    context = {
+        'notifications': notifications,
+    }
+    
+    return render(request, 'dashboard/notifications.html', context)
 
-#     send_mail(
-#         subject=f"RSVP Confirmation for {event.name}",
-#         message=f"Hi {request.user.username}, thanks for RSVPing!",
-#         from_email=settings.EMAIL_HOST_USER,
-#         recipient_list=[request.user.email],
-#         fail_silently=False
-#     )
 
-#     messages.success(request, "Your RSVP has been recorded!")
-#     return redirect('details', event.id)
 
-# @method_decorator(login_required, name='dispatch')
-# class MyRSVPSView(TemplateView):
-#     template_name = 'rsvp.html'
+@login_required
+def dashboard_settings(request):
+    """User's settings page"""
+    user = request.user
+    
+    if request.method == 'POST':
+        # Update user settings
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+        user.email = request.POST.get('email', user.email)
+        user.save()
+        
+        messages.success(request, 'Settings updated successfully!')
+        return redirect('dashboard_settings')
+    
+    context = {
+        'user': user,
+    }
+    
+    return render(request, 'dashboard/settings.html', context)
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['events'] = self.request.user.event_users.all()
-#         return context
+
+# Event Action Views
+@login_required
+def rsvp_event(request, event_id):
+    """Handle RSVP for an event"""
+    event = get_object_or_404(Event, id=event_id)
+    user = request.user
+    
+    # Check if user already RSVP'd
+    existing_rsvp = EventParticipant.objects.filter(user=user, event=event).first()
+    
+    if existing_rsvp:
+        # Cancel RSVP
+        existing_rsvp.delete()
+        messages.success(request, f'You have cancelled your RSVP for {event.title}')
+        
+        # Log activity
+        UserActivity.objects.create(
+            user=user,
+            event=event,
+            activity_type='cancel'
+        )
+    else:
+        # Create new RSVP
+        EventParticipant.objects.create(
+            user=user,
+            event=event,
+            status='going'
+        )
+        
+        # Update registered count
+        event.registered = event.registered + 1 if event.registered else 1
+        event.save()
+        
+        messages.success(request, f'You have successfully RSVP\'d for {event.title}')
+        
+        # Log activity
+        UserActivity.objects.create(
+            user=user,
+            event=event,
+            activity_type='rsvp'
+        )
+        
+        # Create notification
+        Notification.objects.create(
+            user=user,
+            event=event,
+            notification_type='rsvp_confirmation',
+            title='RSVP Confirmed',
+            message=f'Your RSVP for {event.title} has been confirmed.'
+        )
+    
+    return redirect('event_detail', event_id=event.id)
+
+
+@login_required
+def save_event(request, event_id):
+    """Handle saving an event"""
+    event = get_object_or_404(Event, id=event_id)
+    user = request.user
+    
+    saved, created = SavedEvent.objects.get_or_create(user=user, event=event)
+    
+    if created:
+        messages.success(request, f'{event.title} has been saved to your list')
+        
+        # Log activity
+        UserActivity.objects.create(
+            user=user,
+            event=event,
+            activity_type='save'
+        )
+    else:
+        saved.delete()
+        messages.info(request, f'{event.title} has been removed from your saved list')
+    
+    return redirect('event_detail', event_id=event.id)
+
+
 
 @method_decorator(login_required, name='dispatch')
 class ParticipantListView(TemplateView):

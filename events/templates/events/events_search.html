@@ -1,0 +1,21 @@
+<div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3">
+  <form method="GET" class="flex flex-col lg:flex-row gap-3">
+
+    <input type="text" name="q"
+      placeholder="Search events..."
+      class="flex-1 px-4 py-3 bg-zinc-800 rounded-xl text-white">
+
+    <select name="category"
+      class="px-4 py-3 bg-zinc-800 rounded-xl text-white">
+      <option value="">All Categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat.slug }}">{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+
+    <button class="bg-cyan-600 px-6 py-3 rounded-xl text-white">
+      Search
+    </button>
+
+  </form>
+</div>

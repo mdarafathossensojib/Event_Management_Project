@@ -11,7 +11,7 @@
                   Discover handpicked events that are making waves in the industry.
               </p>
           </div>
-          <a href="{% url 'home' %}">
+          <a href="{% url 'events' %}">
               <button class="border border-gray-700 text-white px-5 py-2.5 rounded-xl hover:bg-gray-900 transition-all duration-300 flex items-center gap-2 group">
                   View All Events
                   <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,7 +26,7 @@
             
             {% with featured_events.0 as event %}
             {% if event %}
-            <a href="{% url 'home' %}" class="md:col-span-2 md:row-span-2 group">
+            <a href="{% url 'event_detail' id=event.id %}" class="md:col-span-2 md:row-span-2 group">
                 <div class="relative h-full bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/5">
                     
                     <!-- Image -->
@@ -62,7 +62,7 @@
                                 <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
-                                <span>{{ event.formatted_date }} at {{ event.formatted_time }}</span>
+                                <span>{{ event.date }} at {{ event.time }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@
             <!-- Small Cards Grid -->
             <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {% for event in featured_events|slice:"1:5" %}
-                <a href="{% url 'home' %}" class="group">
+                <a href="{% url 'event_detail' id=event.id %}" class="group">
                     <div class="relative h-full bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/5">
                         
                         <!-- Image -->
@@ -113,7 +113,7 @@
                                     <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
-                                    <span>{{ event.formatted_date }} at {{ event.formatted_time }}</span>
+                                    <span>{{ event.date }} at {{ event.time }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

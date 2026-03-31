@@ -14,7 +14,7 @@
         </div>
 
         <div class="text-3xl md:text-4xl font-bold text-white mb-1">
-          50,000+
+          <span class="count" data-target="50000">0</span>+
         </div>
         <div class="text-lg font-medium text-white mb-1">
           Events Hosted
@@ -35,7 +35,7 @@
         </div>
 
         <div class="text-3xl md:text-4xl font-bold text-white mb-1">
-          2M+
+          <span class="count" data-target="100">0</span>M+
         </div>
         <div class="text-lg font-medium text-white mb-1">
           Active Users
@@ -58,7 +58,7 @@
         </div>
 
         <div class="text-3xl md:text-4xl font-bold text-white mb-1">
-          150+
+          <span class="count" data-target="150">0</span>+
         </div>
         <div class="text-lg font-medium text-white mb-1">
           Cities Worldwide
@@ -79,7 +79,7 @@
         </div>
 
         <div class="text-3xl md:text-4xl font-bold text-white mb-1">
-          98%
+          <span class="count" data-target="98">0</span>%
         </div>
         <div class="text-lg font-medium text-white mb-1">
           Satisfaction Rate
@@ -92,3 +92,39 @@
     </div>
   </div>
 </section>
+
+<script>
+  const counters = document.querySelectorAll(".count");
+
+  const animateCount = (el) => {
+    const target = +el.getAttribute("data-target");
+    let count = 0;
+
+    const update = () => {
+      const increment = target / 100;
+
+      if (count < target) {
+        count += increment;
+        el.innerText = Math.floor(count).toLocaleString();
+        requestAnimationFrame(update);
+      } else {
+        el.innerText = target.toLocaleString();
+      }
+    };
+
+    update();
+  };
+
+  // Intersection Observer (scroll trigger)
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach((counter) => {
+    observer.observe(counter);
+  });
+</script>

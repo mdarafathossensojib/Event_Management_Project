@@ -3,6 +3,61 @@
 
 {% block content %}
 
+<section class="min-h-screen bg-zinc-950 flex">
+
+  <!-- LEFT SIDE (Visual) -->
+  <div class="hidden lg:flex lg:flex-1 bg-gradient-to-br from-cyan-500/20 via-black to-cyan-500/10 items-center justify-center p-16">
+    <div class="max-w-lg text-center text-white">
+
+      <div class="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 mb-8">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="h-12 w-12 rounded-full bg-cyan-500/20"></div>
+          <div class="flex-1">
+            <div class="h-4 bg-zinc-700 rounded-full w-3/4 mb-2"></div>
+            <div class="h-3 bg-zinc-600 rounded-full w-1/2"></div>
+          </div>
+        </div>
+
+        <div class="space-y-3 mb-5">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-xl bg-cyan-500/30"></div>
+            <div class="flex-1">
+              <div class="h-3 bg-zinc-700 rounded-full mb-2"></div>
+              <div class="h-2 bg-zinc-600 rounded-full w-2/3"></div>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-3 mb-5">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-xl bg-cyan-500/30"></div>
+            <div class="flex-1">
+              <div class="h-3 bg-zinc-700 rounded-full mb-2"></div>
+              <div class="h-2 bg-zinc-600 rounded-full w-2/3"></div>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-3 mb-5">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-xl bg-cyan-500/30"></div>
+            <div class="flex-1">
+              <div class="h-3 bg-zinc-700 rounded-full mb-2"></div>
+              <div class="h-2 bg-zinc-600 rounded-full w-2/3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="text-2xl font-bold mb-4">Start Your Journey</h2>
+      <p class="text-zinc-400">
+        Create your account and unlock access to amazing events.
+      </p>
+
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE (FORM) -->
+  <div class="flex-1 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
+    <div class="w-full max-w-md mx-auto">
         <div class="mx-auto w-1/2 py-10">
             {% if form.non_field_errors %}
                 {% for error in form.non_field_errors %}
@@ -10,28 +65,71 @@
                 {% endfor %}
             {% endif %}
         </div>
-        
-        <div class="w-1/2 mx-auto bg-gray-200 p-8 mb-8 rounded-lg shadow -mt-6">
-            <h1 class="text-2xl font-bold mb-5 text-center">Create Account</h1>
 
-            <form method="POST" class="space-y-4">
-                {% csrf_token %}
+      <a href="/" class="text-zinc-400 hover:text-white mb-8 block">
+        ← Back to home
+      </a>
 
-                {% for field in form %}
-                    <div>
-                        <label class="block font-semibold mb-1">{{ field.label }}</label>
-                        {{ field }}
-
-                        {% if field.errors %}
-                            <p class="text-red-500 text-sm">{{ field.errors.0 }}</p>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-
-                <button class="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600">Sign Up
-                </button>
-            </form>
+      <!-- Logo -->
+      <div class="flex items-center gap-3 mb-8">
+        <div class="h-10 w-10 rounded-xl bg-cyan-600 flex items-center justify-center text-white">
+          📅
         </div>
+        <span class="text-2xl font-bold text-white">Eventify</span>
+      </div>
+
+      <h1 class="text-3xl font-bold text-white mb-2">Create an account</h1>
+      <p class="text-zinc-400 mb-8">Get started today</p>
+
+      <!-- FORM -->
+      <form method="POST" class="space-y-4">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div>
+                <label class="block font-semibold mb-1">{{ field.label }}</label>
+                {{ field }}
+
+                {% if field.errors %}
+                    <p class="text-red-500 text-sm">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <!-- Terms -->
+        <div class="flex items-center gap-2 mb-6">
+          <input type="checkbox" id="terms">
+          <label class="text-sm font-normal leading-relaxed text-zinc-400">
+            I agree to the
+          </label>
+          <a href="{% url 'home' %}" class="text-sm font-normal leading-relaxed text-cyan-400 hover:underline" target="_blank">
+            Terms and Services 
+          </a>
+          <label class="text-sm font-normal leading-relaxed text-zinc-400">
+            and
+          </label>
+          <a href="{% url 'home' %}" class="text-sm font-normal leading-relaxed text-cyan-400 hover:underline" target="_blank">
+            Privacy Policy
+          </a>
+        </div>
+
+        <!-- Submit -->
+        <button id="submitBtn"
+          class="w-full h-12 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-white">
+          Create account
+        </button>
+
+      </form>
+
+      <p class="mt-6 text-center text-zinc-400">
+        Already have an account?
+        <a href="{% url 'sign-in' %}" class="text-cyan-400">Sign in</a>
+      </p>
+
+    </div>
+  </div>
+
+</section>
 
 
 {% endblock content %}

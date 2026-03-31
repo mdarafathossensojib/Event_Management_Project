@@ -1,5 +1,5 @@
 from django.urls import path
-from users.views import sign_up, activate_user, ProfileView, EditProfileView, CustomLoginView, CustomPasswordChangeView, CustomPasswordResetView, CustomPasswordResetConfirmView, GroupCreateView, GroupListView, AssignRoleView, ParticipantListView, AdminDashboardView
+from users.views import sign_up, activate_user, ProfileView, EditProfileView, CustomLoginView, CustomPasswordChangeView, CustomPasswordResetView, CustomPasswordResetConfirmView, GroupCreateView, GroupListView, AssignRoleView, ParticipantListView, AdminDashboardView, dashboard, save_event, rsvp_event, dashboard_settings, dashboard_saved, dashboard_rsvps, dashboard_notifications
 from django.contrib.auth.views import LogoutView, PasswordChangeDoneView
 
 urlpatterns = [
@@ -11,9 +11,6 @@ urlpatterns = [
     path('admin/create-group/', GroupCreateView.as_view(), name="create-group"),
     path('admin/group-list/', GroupListView.as_view(), name="group-list"),
     path('admin/dashboard/', AdminDashboardView.as_view(), name="admin-dashboard"),
-    # path('events/', dashboard, name="dashboard"),
-    # path('rsvp/<int:event_id>', event_rsvp, name='rsvp'),
-    # path('my-rsvps/', MyRSVPSView.as_view(), name='my-rsvps'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('edit-profile/', EditProfileView.as_view(), name='edit-profile'),
     path('participants/', ParticipantListView.as_view(), name='participants'),
@@ -21,4 +18,16 @@ urlpatterns = [
     path('password-change/done/', PasswordChangeDoneView.as_view(template_name='accounts/password_change_done.html'), name="password_change_done"),
     path('password-reset/', CustomPasswordResetView.as_view(), name="password-reset"),
     path('password-reset/confirm/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+
+
+    # Event Actions
+    path('events/<int:event_id>/rsvp/', rsvp_event, name='rsvp_event'),
+    path('events/<int:event_id>/save/', save_event, name='save_event'),
+    
+    # Dashboard Views
+    path('dashboard/', dashboard, name='dashboard'),
+    path('dashboard/rsvps/', dashboard_rsvps, name='dashboard_rsvps'),
+    path('dashboard/saved/', dashboard_saved, name='dashboard_saved'),
+    path('dashboard/notifications/', dashboard_notifications, name='dashboard_notifications'),
+    path('dashboard/settings/', dashboard_settings, name='dashboard_settings'),
 ]

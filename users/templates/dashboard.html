@@ -1,137 +1,192 @@
-{% extends "base.html" %}
-{% block title %} Events {% endblock title %} 
-
-{% block content %} 
-
+{% extends "dashboardLayout/dashboardBase.html" %}
 {% load static %}
 
-  <!-- Main Container -->
-  <div class="max-w-7xl mx-auto grid grid-cols-12 gap-6 pt-4">
+{% block title %}Dashboard | Eventify{% endblock %}
 
-    <!-- Left Section (8 columns) -->
-    <div class="col-span-12 lg:col-span-8">
+{% block content %}
+<div class="space-y-8 pb-20 lg:pb-0 lg:ml-64">
+    <!-- Welcome Header -->
+    <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+            Welcome back, {{ user.get_full_name|default:user.username }}!
+        </h1>
+        <p class="text-gray-400">
+            Here's what's happening with your events
+        </p>
+    </div>
 
-
-      <!-- Top Buttons -->
-      <div class="p-4 rounded-xl flex gap-2 m-0">
-        <a href="{% url 'events' %}" class="bg-gray-100 px-2 py-1 rounded-lg hover:bg-gray-200">All</a>
-        <a href="{% url 'events' %}?type=today" class="bg-gray-100 px-2 py-1 rounded-lg hover:bg-gray-200">Today</a>
-        <a href="{% url 'events' %}?type=upcoming" class="bg-gray-100 px-2 py-1 rounded-lg hover:bg-gray-200">Coming</a>
-        <a href="{% url 'events' %}?type=recent" class="bg-gray-200 px-2 py-1 rounded-lg hover:bg-gray-200">Recent</a>
-      </div>
-
-      <!-- Events List -->
-      <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-        <h2 class="text-2xl font-bold mb-2">Events</h2>
-
-        {% for event in events %}
-          <div class="bg-gray-200 p-3 rounded-lg grid grid-cols-12 gap-4">
-            <div class="col-span-12 lg:col-span-5">
-              <img src={{event.asset.url}} alt="Events Img" class="" >
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm text-gray-400 mb-1">Upcoming Events</p>
+                    <p class="text-3xl font-bold text-white">{{ upcoming_count|default:"0" }}</p>
+                    <p class="text-xs text-cyan-500 mt-1 flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        +{{ new_this_week|default:"0" }} this week
+                    </p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
             </div>
-            <div class="col-span-12 lg:col-span-7 gap-2 mt-2 space-y-2">
-              <h2 class="text-xl font-bold">Event Name: {{event.name}}</h2>
-              <p class="text-md">Category: {{event.category.name}} </p>
-              <p class="text-md">Date: {{event.date}}</p>
-              <p class="text-md">Location: {{event.location}}</p>
-              <p class="text-md">No of Participants: {{event.participant_count}}</p>
-              <div class="mt-2 pt-4 flex gap-2">
-                <a href="{% url 'details' event.id %}" class="bg-orange-600 rounded-lg text-white py-2 px-3">Details</a>
-                <a href="{% url 'rsvp' event.id %}" class="bg-orange-600 rounded-lg text-white py-2 px-3">RSVP</a>
-              </div>
+        </div>
+
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm text-gray-400 mb-1">Events Attended</p>
+                    <p class="text-3xl font-bold text-white">{{ attended_count|default:"0" }}</p>
+                    <p class="text-xs text-cyan-500 mt-1">All time</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5h14a2 2 0 012 2v3a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"></path>
+                    </svg>
+                </div>
             </div>
-          </div>
-        {% endfor %}
-      </div>
-
-    </div>
-
-    <!-- Right Section (4 columns) -->
-    <div class="col-span-12 lg:col-span-4 space-y-4">
-
-      <div class="p-4 rounded-lg text-center bg-gray-300 p-4 rounded-xl space-y-4">
-        <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-        <h2 class="text-lg mb-1">Search By Name</h2>
-          <form method="GET" class="flex gap-2 mb-6 justify-center">
-            <input type="text" name="name" value="{{ name_query }}"
-                  placeholder="Search events..."
-                  class="border px-3 py-2 w-64 rounded">
-            <button class="bg-orange-600 text-white px-4 py-2 rounded">Search</button>
-          </form>
-        <h2 class="text-lg mb-1">Search By Category</h2>
-        <form method="GET" class="flex gap-2 mb-6 justify-center">
-          <input type="text" name="category" value="{{ cat_query }}"
-                placeholder="Search category..."
-                class="border px-3 py-2 w-64 rounded">
-          <button class="bg-orange-600 text-white px-4 py-2 rounded">Search</button>
-        </form>
-        <h2 class="text-lg mb-1">Search By Date Range</h2>
-        <form method="GET" class="mb-6">
-          <input type="date" name="date_from" value="{{ date_from }}"
-                class="border px-3 py-2 rounded">
-          <input type="date" name="date_to" value="{{ date_to }}"
-                class="border px-3 py-2 rounded">
-          <button class="bg-orange-600 text-white px-4 py-2 rounded mt-3">Search</button>
-        </form>
         </div>
 
-      </div>
-      <div class="p-4 rounded-lg text-center">
-        <!-- Upcoming Events List -->
-      <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-        <h2 class="text-xl font-bold mb-2">Upcoming Events</h2>
-
-        <div class="bg-gray-200 p-3 rounded-lg flex justify-between">
-          <div class="font-bold">Event Name</div>
-          <div class="font-bold">Event Date</div>
-        </div>
-        {% for up_event in up_events %}
-        <div class="bg-gray-200 p-3 rounded-lg flex justify-between">
-          <div>{{up_event.name}}</div>
-          <div>{{up_event.date}}</div>
-        </div>
-        {% endfor %}
-      </div>
-      </div>
-
-    </div>
-
-  </div>
-
-    {% comment %} Messages Pop-Up Model {% endcomment %}
-      {% if messages %}
-    <div id="successModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-80 text-center">
-            <h2 class="text-xl font-semibold text-green-600 mb-3 flex">Success <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mt-1">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-    </svg>
-    </h2>
-
-            {% for message in messages %}
-                <p class="text-gray-700 mb-4">{{ message }}</p>
-            {% endfor %}
-
-            <button id="closeModal"
-                class="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                Close
-            </button>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm text-gray-400 mb-1">Saved Events</p>
+                    <p class="text-3xl font-bold text-white">{{ saved_count|default:"0" }}</p>
+                    <p class="text-xs text-cyan-500 mt-1">{{ new_saved|default:"0" }} new</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+            </div>
         </div>
     </div>
 
-<script>
-    // close button
-    document.getElementById("closeModal").onclick = function () {
-        document.getElementById("successModal").style.display = "none";
-    };
+    <!-- Main Content Grid -->
+    <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Upcoming RSVPs -->
+        <div class="lg:col-span-2">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-white">Upcoming RSVPs</h2>
+                <a href="{% url 'dashboard_rsvps' %}" class="text-cyan-500 hover:text-cyan-400 text-sm flex items-center gap-1">
+                    View All
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="space-y-4">
+                {% for rsvp in upcoming_rsvps %}
+                <a href="{% url 'event_detail' rsvp.event.id %}">
+                    <div class="bg-zinc-900 border border-zinc-800 hover:border-cyan-500/50 transition-all rounded-xl p-4">
+                        <div class="flex gap-4">
+                            <div class="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                                <img src="{{ rsvp.event.image.url }}" alt="{{ rsvp.event.title }}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between gap-2">
+                                    <h3 class="font-semibold text-white truncate">{{ rsvp.event.title }}</h3>
+                                    <span class="flex items-center gap-1 text-xs px-2 py-1 rounded-full flex-shrink-0 {% if rsvp.status == 'confirmed' %}bg-green-500/10 text-green-500{% else %}bg-yellow-500/10 text-yellow-500{% endif %}">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        {{ rsvp.status|title }}
+                                    </span>
+                                </div>
+                                <div class="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-sm text-gray-400">
+                                    <span class="flex items-center gap-1">
+                                        <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        {{ rsvp.event.date }}
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        {{ rsvp.event.time }}
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        {{ rsvp.event.location }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-center">
+                    <p class="text-gray-400">No upcoming RSVPs yet</p>
+                    <a href="{% url 'events' %}" class="text-cyan-500 hover:text-cyan-400 mt-2 inline-block">Browse Events</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
 
-    // click outside to close
-    window.onclick = function(e){
-        const modal = document.getElementById("successModal");
-        if(e.target === modal){
-            modal.style.display = "none";
-        }
-    };
-</script>
-{% endif %}
+        <!-- Recent Activity & Quick Actions -->
+        <div>
+            <h2 class="text-xl font-semibold text-white mb-4">Recent Activity</h2>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                <div class="space-y-4">
+                    {% for activity in recent_activities %}
+                    <div class="flex items-start gap-3">
+                        <div class="w-2 h-2 rounded-full bg-cyan-500 mt-2 flex-shrink-0"></div>
+                        <div>
+                            <p class="text-sm text-white">
+                                <span class="text-gray-400">{{ activity.action }}</span>
+                                <span class="font-medium">{{ activity.event_title }}</span>
+                            </p>
+                            <p class="text-xs text-gray-500">{{ activity.time_ago }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-400 text-center py-4">No recent activity</p>
+                    {% endfor %}
+                </div>
+            </div>
 
-{% endblock content %}
+            <!-- Quick Actions -->
+            <div class="mt-6">
+                <h2 class="text-xl font-semibold text-white mb-4">Quick Actions</h2>
+                <div class="space-y-2">
+                    <a href="{% url 'events' %}">
+                        <button class="w-full bg-cyan-500 hover:bg-cyan-400 text-white py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Browse Events
+                        </button>
+                    </a>
+                    <a href="{% url 'dashboard_rsvps' %}">
+                        <button class="w-full border border-zinc-700 hover:border-cyan-500 text-white py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5h14a2 2 0 012 2v3a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"></path>
+                            </svg>
+                            View My RSVPs
+                        </button>
+                    </a>
+                    <a href="{% url 'dashboard_saved' %}">
+                        <button class="w-full border border-zinc-700 hover:border-cyan-500 text-white py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                            Saved Events
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

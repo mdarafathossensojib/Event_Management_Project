@@ -3,32 +3,134 @@
 
 {% block content %}
 
-        <div class="w-1/2 mx-auto">
+<section class="min-h-screen bg-zinc-950 flex">
+
+  <!-- Left Side -->
+  <div class="flex-1 flex flex-col justify-center px-8 lg:px-16 xl:px-24 mt-10">
+    <div class="w-full max-w-md mx-auto">
+        <div class="mx-auto w-1/2 py-5">
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            {% endif %}
+        </div>
+      <!-- Back -->
+      <a href="/" class="flex items-center gap-2 text-zinc-400 hover:text-white mb-8">
+        ← Back to home
+      </a>
+
+      <!-- Logo -->
+      <div class="flex items-center gap-3 mb-8">
+        <div class="h-10 w-10 rounded-xl bg-cyan-600 flex items-center justify-center text-white">
+          📅
+        </div>
+        <span class="text-2xl font-bold text-white">Eventify</span>
+      </div>
+
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2">Welcome back</h1>
+        <p class="text-zinc-400">Sign in to your account to continue</p>
+      </div>
+      <div class="w-1/2 mx-auto">
         {% if messages %}
             {% for msg in messages %}
                 <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ msg }}</div>
             {% endfor %}
         {% endif %}
         </div>
-        <div class="w-1/2 mx-auto my-10 bg-gray-200 p-6 rounded-lg shadow">
-            <h1 class="text-2xl font-bold mb-5 text-center">Sign In</h1>
 
-            {% if form.non_field_errors %}
-                <p class="text-red-500 text-sm mb-3">{{ form.non_field_errors }}</p>
-            {% endif %}
+      <!-- FORM -->
+      <form method="POST" action="">
+        {% csrf_token %}
 
-            <form method="POST" class="space-y-4">
-                {% csrf_token %}
-
-                {{ form.username }}
-                {{ form.password }}
-
-                <button class="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600">
-                    Sign In
-                </button>
-            </form>
-
-            <a class='hover:text-orange-500 mt-3' href="{% url 'password-reset' %}">Forget Password?</a>
+        <!-- Email -->
+        <div class="mb-5">
+          <label class="block text-sm mb-2 text-zinc-300">Enter Your Username</label>
+          {{ form.username }}
+            
         </div>
+
+        <!-- Password -->
+        <div class="mb-5">
+          <div class="flex justify-between mb-2">
+            <label class="text-sm text-zinc-300">Password</label>
+            <a href="password-reset" class="text-sm text-cyan-400 hover:underline">Forgot password?</a>
+          </div>
+
+          <div class="relative">
+            {{ form.password }}
+          </div>
+        </div>
+
+        <!-- Remember -->
+        <div class="flex items-center gap-2 mb-6">
+          <input type="checkbox" name="remember">
+          <label class="text-sm text-zinc-400">Remember me</label>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit"
+          class="w-full h-12 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-white font-semibold">
+          Sign in
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="relative my-8">
+        <div class="border-t border-zinc-700"></div>
+        <span class="absolute left-1/2 -translate-x-1/2 -top-3 bg-zinc-950 px-3 text-sm text-zinc-400">
+          Or continue with
+        </span>
+      </div>
+
+      <!-- Social -->
+      <div class="grid grid-cols-2 gap-4">
+        <button class="h-12 border border-zinc-700 rounded-lg text-white">
+          Google
+        </button>
+        <button class="h-12 border border-zinc-700 rounded-lg text-white">
+          GitHub
+        </button>
+      </div>
+
+      <!-- Signup -->
+      <p class="mt-8 text-center text-zinc-400">
+        Don't have an account?
+        <a href="{% url 'sign-up' %}" class="text-cyan-400 hover:underline">Sign up</a>
+      </p>
+
+    </div>
+  </div>
+
+  <!-- Right Side -->
+  <div class="hidden lg:flex lg:flex-1 bg-gradient-to-br from-indigo-500/20 via-black to-indigo-500/10 items-center justify-center p-16">
+    <div class="max-w-lg text-center text-white">
+
+      <div class="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 mb-8">
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="aspect-square bg-cyan-500/30 rounded-xl"></div>
+          <div class="aspect-square bg-cyan-500/20 rounded-xl"></div>
+          <div class="aspect-square bg-cyan-500/10 rounded-xl"></div>
+          <div class="aspect-square bg-cyan-500/20 rounded-xl"></div>
+          <div class="aspect-square bg-cyan-500/30 rounded-xl"></div>
+          <div class="aspect-square bg-cyan-500/10 rounded-xl"></div>
+        </div>
+        <div class="h-4 bg-zinc-700 rounded-full w-3/4 mx-auto mb-3"></div>
+        <div class="h-3 bg-zinc-600 rounded-full w-1/2 mx-auto"></div>
+      </div>
+
+      <h2 class="text-2xl font-bold mb-4">
+        Discover Amazing Events
+      </h2>
+      <p class="text-zinc-400">
+        Join thousands of people discovering and attending incredible events every day.
+      </p>
+
+    </div>
+  </div>
+
+</section>
 
 {% endblock content %}

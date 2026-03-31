@@ -10,14 +10,14 @@ User = get_user_model()
 class CustomRegistrationForm(forms.ModelForm):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500',
-            'placeholder': 'Password'
+            'class': 'w-full h-12 px-4 mb-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none',
+            'placeholder': 'Enter Your Password'
         })
     )
 
     confirm_password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500',
+            'class': 'w-full h-12 px-4 mb-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none',
             'placeholder': 'Confirm Password'
         })
     )
@@ -28,20 +28,20 @@ class CustomRegistrationForm(forms.ModelForm):
     
         widgets = {
                 'username': forms.TextInput(attrs={
-                    'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500',
-                    'placeholder': 'Username'
+                    'class': 'w-full h-12 px-4 mb-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none',
+                    'placeholder': 'Enter Your Username'
                 }),
                 'first_name': forms.TextInput(attrs={
-                    'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500',
-                    'placeholder': 'First Name'
+                    'class': 'w-full h-12 px-4 mb-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none',
+                    'placeholder': 'Enter Your First Name'
                 }),
                 'last_name': forms.TextInput(attrs={
-                    'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500',
-                    'placeholder': 'Last Name'
+                    'class': 'w-full h-12 px-4 mb-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none',
+                    'placeholder': 'Enter Your Last Name'
                 }),
                 'email': forms.EmailInput(attrs={
-                    'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500',
-                    'placeholder': 'Email Address'
+                    'class': 'w-full h-12 px-4 mb-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none',
+                    'placeholder': 'Enter Your Email Address'
                 }),
             }
 
@@ -94,13 +94,13 @@ class LoginForm(AuthenticationForm):
 
     username = forms.CharField(
         widget=forms.TextInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'class': 'w-full h-12 px-4 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none',
             'placeholder': 'Enter username'
         })
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'class': 'w-full h-12 px-4 pr-12 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none',
             'placeholder': 'Enter password'
         })
     )

@@ -1,0 +1,66 @@
+<div>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <p class="text-zinc-400">
+      Showing <span class="text-white font-medium">{{ events|length }}</span> events
+    </p>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+    {% for event in events %}
+    <a href="{% url 'event_detail' id=event.id %}" class="group">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg">
+
+        <!-- Image -->
+        <div class="relative h-48 overflow-hidden">
+          <img src="{{ event.image.url }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+
+          <div class="absolute top-4 left-4 bg-cyan-600 text-white px-3 py-1 rounded-full text-sm">
+            {{ event.category.name }}
+          </div>
+
+          <div class="absolute top-4 right-4 bg-black/70 px-3 py-1 rounded-full text-sm">
+            {% if event.price == 0 %}
+              Free
+            {% else %}
+              ${{ event.price }}
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-5">
+          <h3 class="font-semibold text-lg mb-2 group-hover:text-cyan-400">
+            {{ event.title }}
+          </h3>
+
+          <p class="text-zinc-400 text-sm mb-4 line-clamp-2">
+            {{ event.description|truncatechars:100 }}
+          </p>
+
+          <div class="text-sm text-zinc-400 space-y-2">
+            <p>📅 {{ event.date }} at {{ event.time }}</p>
+            <p>📍 {{ event.location }}</p>
+            <p>👥 {{ event.attendees|default:0 }} / {{ event.capacity }}</p>
+          </div>
+
+          <!-- Progress -->
+          <div class="mt-4">
+            <div class="h-1.5 bg-zinc-700 rounded-full">
+              <div class="h-full bg-cyan-500 rounded-full"
+                style="width: {% widthratio event.attendees event.capacity 100 %}%">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+
+  </div>
+
+</div>
