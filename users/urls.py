@@ -21,8 +21,8 @@ urlpatterns = [
 
 
     # Event Actions
-    path('events/<int:event_id>/rsvp/', rsvp_event, name='rsvp_event'),
-    path('events/<int:event_id>/save/', save_event, name='save_event'),
+    path('events/<int:id>/rsvp/', rsvp_event, name='rsvp_event'),
+    path('events/<int:id>/save/', save_event, name='save_event'),
     
     # Dashboard Views
     path('dashboard/', dashboard, name='dashboard'),

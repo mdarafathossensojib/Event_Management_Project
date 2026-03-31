@@ -1,0 +1,129 @@
+{% extends "dashboardLayout/dashboardBase.html" %}
+{% load static %}
+
+{% block title %}Settings | Eventify{% endblock %}
+{% block content %}
+
+<section class="bg-black min-h-screen flex text-white">
+
+  <main class="flex-1 p-8">
+
+    <h1 class="text-2xl font-bold mb-6">Settings</h1>
+
+    <!-- Tabs -->
+    <div class="flex gap-6 border-b border-zinc-800 mb-6">
+      <button onclick="switchTab('profile')" id="tab-profile"
+        class="pb-2 border-b-2 border-cyan-500 text-cyan-400">Edit Profile</button>
+
+      <button onclick="switchTab('password')" id="tab-password"
+        class="pb-2 text-gray-400">Change Password</button>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div id="profileTab">
+      <form method="POST" enctype="multipart/form-data" class="space-y-6 max-w-3xl">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-2 gap-4">
+            {% comment %} <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Profile Image -->
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">Profile Image</label>
+
+                {% if request.user.profile_image %}
+                <img src="{{ request.user.profile_image.url }}"
+                    class="w-24 h-24 rounded-full object-cover mb-3 border border-zinc-700">
+                {% endif %}
+
+                {{ form.profile_image }}
+            </div>
+
+                <!-- Cover Image -->
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Cover Image</label>
+
+                    {% if request.user.cover_image %}
+                    <img src="{{ request.user.cover_image.url }}"
+                        class="w-full h-28 object-cover rounded-lg mb-3 border border-zinc-700">
+                    {% endif %}
+
+                    {{ form.cover_image }}
+                </div>
+            </div> {% endcomment %}
+          {{ form.first_name }}
+          {{ form.last_name }}
+          {{ form.email }}
+          {{ form.phone }}
+        </div>
+
+        <div>
+          {{ form.bio }}
+        </div>
+
+        <div>
+          {{ form.address }}
+        </div>
+
+        <button type="submit" name="update_profile" class="bg-cyan-500 px-4 py-2 rounded hover:bg-cyan-400">
+          Save Changes
+        </button>
+      </form>
+    </div>
+
+    <!-- PASSWORD TAB -->
+    <div id="passwordTab" class="hidden">
+      <form method="POST" class="space-y-4 max-w-md">
+        {% csrf_token %}
+
+        {% for field in password_form %}
+          <div>
+            <label class="text-sm text-gray-400">{{ field.label }}</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+
+        <button type="submit" name="change_password" class="bg-cyan-500 px-4 py-2 rounded hover:bg-cyan-400">
+          Change Password
+        </button>
+      </form>
+    </div>
+
+  </main>
+</section>
+
+<script>
+function switchTab(tab) {
+  const profileTab = document.getElementById("profileTab");
+  const passwordTab = document.getElementById("passwordTab");
+
+  const tabProfileBtn = document.getElementById("tab-profile");
+  const tabPasswordBtn = document.getElementById("tab-password");
+
+  // hide all
+  profileTab.classList.add("hidden");
+  passwordTab.classList.add("hidden");
+
+  // reset buttons
+  tabProfileBtn.classList.remove("text-cyan-400", "border-cyan-500", "border-b-2");
+  tabPasswordBtn.classList.remove("text-cyan-400", "border-cyan-500", "border-b-2");
+
+  tabProfileBtn.classList.add("text-gray-400");
+  tabPasswordBtn.classList.add("text-gray-400");
+
+  if (tab === "profile") {
+    profileTab.classList.remove("hidden");
+
+    tabProfileBtn.classList.remove("text-gray-400");
+    tabProfileBtn.classList.add("text-cyan-400", "border-cyan-500", "border-b-2");
+
+  } else {
+    passwordTab.classList.remove("hidden");
+
+    tabPasswordBtn.classList.remove("text-gray-400");
+    tabPasswordBtn.classList.add("text-cyan-400", "border-cyan-500", "border-b-2");
+  }
+}
+</script>
+
+{% endblock %}

@@ -5,22 +5,18 @@
 
         <!-- Mobile Logo (only visible on mobile) -->
         <div class="md:hidden flex items-center gap-2">
-            <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
+            <a href="{% url 'home' %}" class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
             </div>
             <span class="text-xl font-bold text-white">Eventify</span>
+            </a>
         </div>
 
         <!-- Desktop Logo (only visible on desktop) -->
         <div class="hidden lg:flex items-center gap-2">
-            <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-            </div>
-            <span class="text-xl font-bold text-white">Eventify</span>
         </div>
 
         
@@ -38,19 +34,50 @@
             </button>
             
             <!-- Notification bell -->
-            <button class="relative text-gray-400 hover:text-white transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                </svg>
-                <span class="absolute top-0 right-0 w-2 h-2 bg-cyan-500 rounded-full"></span>
-            </button>
+            <div class="relative">
+                <button onclick="toggleNotifications()" class="relative text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                    </path>
+                    </svg>
+
+                    <!-- unread dot -->
+                    {% if unread_count > 0 %}
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-cyan-500 rounded-full"></span>
+                    {% endif %}
+                </button>
+                <div id="notificationPopup" class="hidden absolute right-0 mt-3 w-80 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl z-50">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
+                        <h3 class="text-white font-semibold">Notifications</h3>
+                        <a href="{% url 'dashboard_notifications' %}" class="text-xs text-cyan-400 hover:underline">
+                        View All
+                        </a>
+                    </div>
+
+                    <!-- List -->
+                    <div class="max-h-80 overflow-y-auto">
+
+                        {% for notif in request.user.notifications.all|slice:":5" %}
+                        <div class="px-4 py-3 border-b border-zinc-800 hover:bg-zinc-800 transition-all {% if not notif.is_read %}bg-cyan-500/10{% endif %}">
+                        <p class="text-sm text-white font-medium">{{ notif.title }}</p>
+                        <p class="text-xs text-gray-400">{{ notif.message }}</p>
+                        <p class="text-xs text-gray-500 mt-1">{{ notif.created_at|timesince }} ago</p>
+                        </div>
+                        {% empty %}
+                        <p class="text-center text-gray-400 py-6">No notifications</p>
+                        {% endfor %}
+
+                    </div>
+
+                    </div>
+                </div>
 
             <!-- User avatar (desktop) -->
             <div class="hidden lg:flex items-center gap-3 pl-3 border-l border-zinc-800">
-                <div class="w-9 h-9 rounded-full bg-cyan-500/10 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
+                <div class="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center">
+                    <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name|default:user.username }}" srcset="" class="w-9 h-9 rounded-full object-cover">
                 </div>
             </div>
         </div>
@@ -115,7 +142,7 @@
         if (menu) {
             menu.classList.toggle('hidden');
         }
-    }
+    };
 
     function toggleSearch() {
         const search = document.getElementById('mobileSearch');
@@ -125,5 +152,17 @@
         } else {
             search.classList.add('hidden');
         }
-    }
+    };
+    function toggleNotifications() {
+        const popup = document.getElementById("notificationPopup");
+        popup.classList.toggle("hidden");
+        }
+
+        // click outside → close
+        document.addEventListener("click", function (e) {
+        const popup = document.getElementById("notificationPopup");
+        if (!e.target.closest("#notificationPopup") && !e.target.closest("button")) {
+            popup.classList.add("hidden");
+        }
+        });
 </script>

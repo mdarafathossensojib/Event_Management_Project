@@ -140,21 +140,23 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(
         label="Current Password",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'class': 'w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500',
             'placeholder': 'Enter current password'
         })
     )
+
     new_password1 = forms.CharField(
         label="New Password",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'class': 'w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500',
             'placeholder': 'Enter new password'
         })
     )
+
     new_password2 = forms.CharField(
         label="Confirm New Password",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'class': 'w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500',
             'placeholder': 'Re-enter new password'
         })
     )
@@ -199,25 +201,23 @@ class EditProfileForm(forms.ModelForm):
 
         widgets = {
             'first_name': forms.TextInput(attrs={
-                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+                'class': 'w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500'
             }),
             'last_name': forms.TextInput(attrs={
-                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+                'class': 'w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500'
             }),
             'email': forms.EmailInput(attrs={
-                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+                'class': 'w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500'
             }),
             'phone': forms.TextInput(attrs={
-                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+                'class': 'w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500'
             }),
             'bio': forms.Textarea(attrs={
-                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500',
+                'class': 'w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500',
                 'rows': 4
             }),
             'address': forms.TextInput(attrs={
-                'class': 'border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+                'class': 'w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500'
             }),
         }
-
-
 

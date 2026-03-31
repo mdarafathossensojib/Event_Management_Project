@@ -12,11 +12,12 @@ from django.utils.decorators import method_decorator
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.views.generic import TemplateView, UpdateView, CreateView, FormView
 from datetime import timedelta
 from events.models import Event, Category, EventParticipant, SavedEvent, Notification, UserActivity
-
+from django.contrib.auth import update_session_auth_hash
 
 
 User = get_user_model()
@@ -191,6 +192,10 @@ def dashboard(request):
     recent_activities = UserActivity.objects.filter(
         user=user
     ).select_related('event')[:5]
+    unread_count = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).count()
     
     # Format activities for display
     formatted_activities = []
@@ -209,6 +214,7 @@ def dashboard(request):
         'new_this_week': new_this_week,
         'new_saved': new_saved,
         'recent_activities': formatted_activities,
+        'unread_count': unread_count,
     }
     
     return render(request, 'dashboard.html', context)
@@ -229,13 +235,19 @@ def dashboard_rsvps(request):
         user=user,
         event__date__lt=timezone.now().date()
     ).select_related('event').order_by('-event__date')
+
+    unread_count = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).count()
     
     context = {
         'upcoming_rsvps': upcoming_rsvps,
         'past_rsvps': past_rsvps,
+        'unread_count': unread_count,
     }
     
-    return render(request, 'dashboard/rsvps.html', context)
+    return render(request, 'rsvp.html', context)
 
 
 @login_required
@@ -246,64 +258,102 @@ def dashboard_saved(request):
     saved_events = SavedEvent.objects.filter(
         user=user
     ).select_related('event').order_by('-created_at')
+    unread_count = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).count()
     
     context = {
         'saved_events': saved_events,
+        'unread_count': unread_count,
     }
     
-    return render(request, 'dashboard/saved.html', context)
+    return render(request, 'rsvp_save.html', context)
 
 
 @login_required
 def dashboard_notifications(request):
-    """User's notifications page"""
     user = request.user
     
-    notifications = Notification.objects.filter(
-        user=user
-    ).order_by('-created_at')
-    
-    # Mark notifications as read
-    unread_notifications = notifications.filter(is_read=False)
-    for notif in unread_notifications:
-        notif.is_read = True
-        notif.save()
-    
+    notifications = Notification.objects.filter(user=user).order_by('-created_at')
+
+    # mark all as read
+    notifications.filter(is_read=False).update(is_read=True)
+    unread_count = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).count()
+
     context = {
         'notifications': notifications,
+        'unread_count': unread_count,
     }
     
-    return render(request, 'dashboard/notifications.html', context)
-
+    return render(request, 'notification.html', context)
 
 
 @login_required
 def dashboard_settings(request):
-    """User's settings page"""
     user = request.user
-    
+
+    form = EditProfileForm(instance=user)
+    password_form = CustomPasswordChangeForm(user)
+
     if request.method == 'POST':
-        # Update user settings
-        user.first_name = request.POST.get('first_name', user.first_name)
-        user.last_name = request.POST.get('last_name', user.last_name)
-        user.email = request.POST.get('email', user.email)
-        user.save()
-        
-        messages.success(request, 'Settings updated successfully!')
-        return redirect('dashboard_settings')
-    
-    context = {
-        'user': user,
-    }
-    
-    return render(request, 'dashboard/settings.html', context)
+
+        # PROFILE UPDATE
+        if 'update_profile' in request.POST:
+            form = EditProfileForm(request.POST, request.FILES, instance=user)
+
+            if form.is_valid():
+                form.save()
+
+                Notification.objects.create(
+                    user=user,
+                    notification_type='profile_update',
+                    title='Profile Updated',
+                    message='Your profile information has been updated successfully.'
+                )
+
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('dashboard_settings')
+
+        # PASSWORD CHANGE
+        elif 'change_password' in request.POST:
+            password_form = CustomPasswordChangeForm(user, request.POST)
+
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+
+                Notification.objects.create(
+                    user=user,
+                    notification_type='password_change',
+                    title='Password Changed',
+                    message='Your password has been changed successfully.'
+                )
+
+                messages.success(request, 'Password changed successfully!')
+                return redirect('dashboard_settings')
+
+    unread_count = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).count()
+
+    return render(request, 'accounts/settings.html', {
+        'form': form,
+        'password_form': password_form,
+        'unread_count': unread_count
+    })
+
 
 
 # Event Action Views
 @login_required
-def rsvp_event(request, event_id):
+def rsvp_event(request, id):
     """Handle RSVP for an event"""
-    event = get_object_or_404(Event, id=event_id)
+    event = get_object_or_404(Event, id=id)
     user = request.user
     
     # Check if user already RSVP'd
@@ -312,6 +362,11 @@ def rsvp_event(request, event_id):
     if existing_rsvp:
         # Cancel RSVP
         existing_rsvp.delete()
+
+        # decrease count
+        if event.registered and event.registered > 0:
+            event.registered -= 1
+            event.save()
         messages.success(request, f'You have cancelled your RSVP for {event.title}')
         
         # Log activity
@@ -350,13 +405,13 @@ def rsvp_event(request, event_id):
             message=f'Your RSVP for {event.title} has been confirmed.'
         )
     
-    return redirect('event_detail', event_id=event.id)
+    return redirect('event_detail', id=event.id)
 
 
 @login_required
-def save_event(request, event_id):
+def save_event(request, id):
     """Handle saving an event"""
-    event = get_object_or_404(Event, id=event_id)
+    event = get_object_or_404(Event, id=id)
     user = request.user
     
     saved, created = SavedEvent.objects.get_or_create(user=user, event=event)
@@ -374,7 +429,7 @@ def save_event(request, event_id):
         saved.delete()
         messages.info(request, f'{event.title} has been removed from your saved list')
     
-    return redirect('event_detail', event_id=event.id)
+    return redirect('event_detail', id=event.id)
 
 
 

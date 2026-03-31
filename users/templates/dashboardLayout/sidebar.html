@@ -5,12 +5,14 @@
     <div class="flex flex-col flex-1 bg-zinc-900 border-r border-zinc-800">
         <!-- Logo -->
         <div class="flex items-center gap-2 h-16 px-6 border-b border-zinc-800">
+            <a href="{% url 'home' %}" class="flex items-center gap-2">
             <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
             </div>
             <span class="text-xl font-bold text-white">Eventify</span>
+            </a>
         </div>
 
 
@@ -40,7 +42,7 @@
                 </svg>
                 Notifications
             </a>
-            <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {% if 'profile' in request.path %}bg-cyan-500 text-white{% else %}text-gray-400 hover:bg-zinc-800 hover:text-white{% endif %}">
+            <a href="{% url 'profile' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {% if 'profile' in request.path %}bg-cyan-500 text-white{% else %}text-gray-400 hover:bg-zinc-800 hover:text-white{% endif %}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
@@ -59,21 +61,22 @@
         <div class="p-4 border-t border-zinc-800">
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
+                    <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name|default:user.username }}" srcset="" class="w-9 h-9 rounded-full object-cover">
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-white truncate">{{ user.get_full_name|default:user.username }}</p>
                     <p class="text-xs text-gray-400 truncate">{{ user.email }}</p>
                 </div>
             </div>
-            <a href="{% url 'logout' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-zinc-800 hover:text-white transition-colors w-full">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                </svg>
-                Sign Out
-            </a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-zinc-800 hover:text-white transition-colors w-full">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Sign Out
+                </button>
+            </form>
         </div>
     </div>
 </aside>
@@ -105,7 +108,7 @@
             </svg>
             <span>Alerts</span>
         </a>
-        <a href="{% url 'dashboard' %}" class="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs {% if 'profile' in request.path %}text-cyan-500{% else %}text-gray-400{% endif %}">
+        <a href="{% url 'profile' %}" class="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs {% if 'profile' in request.path %}text-cyan-500{% else %}text-gray-400{% endif %}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>

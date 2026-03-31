@@ -1,0 +1,63 @@
+{% extends "dashboardLayout/dashboardBase.html" %}
+{% load static %}
+
+{% block title %}Saved Events{% endblock %}
+{% block content %}
+<div class="bg-black min-h-screen text-white p-6">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold">Saved Events</h1>
+      <a href="{% url 'dashboard' %}" class="text-sm text-cyan-400 hover:underline">
+        ← Back
+      </a>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      {% for item in saved_events %}
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-cyan-500/50 transition-all">
+
+        <img src="{{ item.event.image.url }}" class="h-40 w-full object-cover">
+
+        <div class="p-4">
+          <h3 class="font-semibold text-white mb-2">{{ item.event.title }}</h3>
+
+          <p class="text-sm text-gray-400">
+            {{ item.event.date }} • {{ item.event.time }}
+          </p>
+
+          <p class="text-sm text-gray-500 mt-1">
+            {{ item.event.location }}
+          </p>
+
+          <div class="mt-4 flex justify-between items-center">
+
+            <a href="{% url 'event_detail' item.event.id %}" class="text-cyan-400 text-sm hover:underline">
+              View Details
+            </a>
+
+            <form method="POST" action="{% url 'save_event' item.event.id %}">
+              {% csrf_token %}
+              <button class="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-lg hover:bg-red-500/30">
+                Remove
+              </button>
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-span-full text-center py-20 text-gray-400">
+        <p>No saved events ❤️</p>
+      </div>
+      {% endfor %}
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

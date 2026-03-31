@@ -1,44 +1,94 @@
-{% extends "base.html" %}
-{% block title %} My RSVPs {% endblock %}
+{% extends "dashboardLayout/dashboardBase.html" %}
+{% load static %}
+
+{% block title %}My RSVPs{% endblock %}
 {% block content %}
-{% if messages %}
-    {% for message in messages %}
-        <div class="px-2 py-1 {% if message.tags == 'success' %}bg-green-500{% endif %} ">{{message}}</div>
-    {% endfor %}
-{% endif %}
+<div class="bg-black min-h-screen text-white p-6">
+  <div class="max-w-6xl mx-auto">
 
-<section class='bg-gray-100 min-h-screen flex'>
-  <!-- Sidebar -->
-  {% include "accounts/side_bar.html" %}
-  <!-- Main Content -->
-  <main class="flex-1">
-
-    <div class="p-6">
-  <!-- Page Title -->
-  <h2 class="text-2xl font-semibold text-gray-800">RSVPS Information</h2>
-  <p class="text-gray-500 mb-8"></p>
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Form -->
-      <div class="max-w-lg mx-auto bg-gray-200 p-6 rounded-xl mt-6">
-        <h2 class="text-center">My RSVPed Events</h2>
-        <div class="bg-gray-300 p-3 rounded-lg flex justify-center flex-col">
-            {% for event in events %}
-                <div class="bg-gray-200 p-3 rounded-lg">
-                    <h3><span class='text-xl'>Event Name:</span> {{ event.name }}</h3>
-                    <p><span class='text-xl'>Event Date:</span> {{ event.date }}</p>
-                    <p><span class='text-xl'>Event Location:</span> {{ event.location }}</p>
-                </div>
-            {% empty %}
-                <p class="text-2xl text-bold text-center">You haven't RSVPed to any events yet.</p>
-            {% endfor %}
-        </div>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold">My RSVPs</h1>
+      <a href="{% url 'dashboard' %}" class="text-sm text-cyan-400 hover:underline">
+        ← Back
+      </a>
     </div>
 
+    <!-- Upcoming -->
+    <div class="mb-10">
+      <h2 class="text-lg font-semibold mb-4 text-cyan-400">Upcoming Events</h2>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for rsvp in upcoming_rsvps %}
+        <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-cyan-500/50 transition-all">
+
+          <img src="{{ rsvp.event.image.url }}" class="h-40 w-full object-cover">
+
+          <div class="p-4">
+            <h3 class="font-semibold text-white mb-2">{{ rsvp.event.title }}</h3>
+
+            <p class="text-sm text-gray-400">
+              {{ rsvp.event.date }} • {{ rsvp.event.time }}
+            </p>
+
+            <p class="text-sm text-gray-500 mt-1">
+              {{ rsvp.event.location }}
+            </p>
+
+            <div class="mt-4 flex justify-between items-center">
+              <a href="{% url 'event_detail' rsvp.event.id %}" class="text-cyan-400 text-sm hover:underline">
+                View Details
+              </a>
+
+              <form method="POST" action="{% url 'rsvp_event' rsvp.event.id %}">
+                {% csrf_token %}
+                <button class="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-lg hover:bg-red-500/30">
+                  Cancel
+                </button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-400">No upcoming RSVPs</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Past -->
+    <div>
+      <h2 class="text-lg font-semibold mb-4 text-gray-400">Past Events</h2>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for rsvp in past_rsvps %}
+        <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden opacity-70">
+
+          <img src="{{ rsvp.event.image.url }}" class="h-40 w-full object-cover">
+
+          <div class="p-4">
+            <h3 class="font-semibold text-white mb-2">{{ rsvp.event.title }}</h3>
+
+            <p class="text-sm text-gray-400">
+              {{ rsvp.event.date }} • {{ rsvp.event.time }}
+            </p>
+
+            <p class="text-sm text-gray-500 mt-1">
+              {{ rsvp.event.location }}
+            </p>
+
+            <span class="text-xs bg-gray-700 px-2 py-1 rounded mt-3 inline-block">
+              Completed
+            </span>
+
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-400">No past RSVPs</p>
+        {% endfor %}
+      </div>
     </div>
 
   </div>
 </div>
-  </main>
-  </section>
-{% endblock content %}
+{% endblock %}
