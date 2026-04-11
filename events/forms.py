@@ -41,7 +41,17 @@ class AssignRoleForm(forms.Form):
         })
     )
 
+
 class CreateGroupForm(forms.ModelForm):
+    permissions = forms.ModelMultipleChoiceField(
+        queryset=Permission.objects.select_related('content_type').all(),
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'rounded border-zinc-700 bg-zinc-800 text-cyan-500 focus:ring-0 focus:ring-offset-0'
+        }),
+        required=False,
+        label='Assign Permissions'
+    )
+
     class Meta:
         model = Group
         fields = ['name', 'permissions']
@@ -50,7 +60,8 @@ class CreateGroupForm(forms.ModelForm):
                 'class': 'w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none transition-all',
                 'placeholder': 'Role Name (e.g. Moderator)'
             }),
-            'permissions': forms.CheckboxSelectMultiple(attrs={
-                'class': 'rounded border-zinc-700 bg-zinc-800 text-cyan-500 focus:ring-0 focus:ring-offset-0'
-            })
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['permissions'].queryset = Permission.objects.select_related('content_type').all().order_by('content_type__app_label', 'codename')

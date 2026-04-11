@@ -181,7 +181,7 @@ class AdminRolePermissionView(LoginRequiredMixin, AdminRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['groups'] = Group.objects.prefetch_related('permissions').all()
+        context['groups'] = Group.objects.prefetch_related('permissions__content_type').all()
         
         # User Assignment Form logic
         assign_user_id = self.request.GET.get('assign_user')
