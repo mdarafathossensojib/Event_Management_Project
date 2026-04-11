@@ -3,18 +3,16 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, Count
-from users.forms import CustomRegistrationForm, LoginForm, AssignRoleForm, CreateGroupForm, CustomPasswordChangeForm, CustomPasswordResetForm, CustomPasswordConfirmForm, EditProfileForm
-# from events.models import Event
+from users.forms import CustomRegistrationForm, LoginForm, CustomPasswordChangeForm, CustomPasswordResetForm, CustomPasswordConfirmForm, EditProfileForm
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse_lazy
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
-from django.views.generic import TemplateView, UpdateView, CreateView, FormView
+from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView
+from django.views.generic import TemplateView
 from datetime import timedelta
 from events.models import Event, Category, EventParticipant, SavedEvent, Notification, UserActivity
 from django.contrib.auth import update_session_auth_hash
@@ -28,16 +26,12 @@ def is_admin(user):
 class CustomLoginView(LoginView):
     form_class = LoginForm
     redirect_authenticated_user = True 
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('dashboard')
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
         return next_url if next_url else self.success_url
     
-@method_decorator(login_required, name='dispatch')
-class CustomPasswordChangeView(PasswordChangeView):
-    template_name = 'accounts/change_password.html'
-    form_class = CustomPasswordChangeForm
 
 def sign_up(request):
     form = CustomRegistrationForm()
@@ -71,57 +65,6 @@ def activate_user(request, user_id, token):
         return HttpResponse("User Not Found!")
     
 
-@method_decorator([login_required, user_passes_test(is_admin, login_url='no-permission')], name='dispatch')
-class AdminDashboardView(TemplateView):
-    template_name = 'admin/admin_dashboard.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        users = User.objects.prefetch_related(
-        Prefetch('groups', queryset=Group.objects.all(), to_attr='all_groups')).all()
-
-        for user in users:
-            if user.all_groups:
-                user.group_name = user.all_groups[0].name
-            else:
-                user.group_name = "No Group Assign"
-        context["users"] = users
-        return context
-
-@method_decorator(login_required, name='dispatch')
-@method_decorator(user_passes_test(is_admin, login_url='no-permission'), name='dispatch')
-class AssignRoleView(FormView):
-    template_name = 'admin/assign_role.html'
-    form_class = AssignRoleForm
-    success_url = reverse_lazy('admin-dashboard')
-
-    def form_valid(self, form):
-        user_id = self.kwargs.get('pk')
-        user = User.objects.get(pk=user_id)
-
-        role = form.cleaned_data.get('role')
-        user.groups.clear()
-        user.groups.add(role)
-        messages.success(self.request, f"User {user.username} has been assigned to the {role.name} Role.")
-        return super().form_valid(form)
-    
-@method_decorator(login_required, name='dispatch')
-@method_decorator(user_passes_test(is_admin, login_url='no-permission'), name='dispatch')
-class GroupCreateView(CreateView):
-    model = Group
-    form_class = CreateGroupForm
-    template_name = 'admin/create_group.html'
-    success_url = reverse_lazy('group-list')
-
-
-@method_decorator(login_required, name='dispatch')
-class GroupListView(TemplateView):
-    template_name = 'admin/group_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['groups'] = Group.objects.prefetch_related('permissions').all()
-        return context
 
 
 # Helper function for time ago
@@ -145,79 +88,75 @@ def time_ago(dt):
         return "Just now"
 
 
-# Dashboard Views
 @login_required
 def dashboard(request):
-    """Dashboard home page"""
+    """Dashboard home page - Unified for User and Admin"""
     user = request.user
     
-    # Get upcoming RSVPs (events user is going to)
-    upcoming_rsvps = EventParticipant.objects.filter(
-        user=user,
-        event__date__gte=timezone.now().date(),
-        status='going'
-    ).select_related('event').order_by('event__date')[:3]
-    
-    # Get saved events count
-    saved_count = SavedEvent.objects.filter(user=user).count()
-    
-    # Get attended events count (past events with status attended)
-    attended_count = EventParticipant.objects.filter(
-        user=user,
-        event__date__lt=timezone.now().date(),
-        status='attended'
-    ).count()
-    
-    # Get upcoming events count
-    upcoming_count = EventParticipant.objects.filter(
-        user=user,
-        event__date__gte=timezone.now().date(),
-        status='going'
-    ).count()
-    
-    # Calculate new RSVPs this week
-    week_ago = timezone.now() - timedelta(days=7)
-    new_this_week = EventParticipant.objects.filter(
-        user=user,
-        joined_at__gte=week_ago
-    ).count()
-    
-    # New saved events this week
-    new_saved = SavedEvent.objects.filter(
-        user=user,
-        created_at__gte=week_ago
-    ).count()
-    
-    # Recent activities
-    recent_activities = UserActivity.objects.filter(
-        user=user
-    ).select_related('event')[:5]
-    unread_count = Notification.objects.filter(
-        user=request.user,
-        is_read=False
-    ).count()
-    
-    # Format activities for display
-    formatted_activities = []
-    for activity in recent_activities:
-        formatted_activities.append({
-            'action': activity.get_activity_type_display(),
-            'event_title': activity.event.title,
-            'time_ago': time_ago(activity.created_at),
-        })
-    
-    context = {
-        'upcoming_rsvps': upcoming_rsvps,
-        'saved_count': saved_count,
-        'attended_count': attended_count,
-        'upcoming_count': upcoming_count,
-        'new_this_week': new_this_week,
-        'new_saved': new_saved,
-        'recent_activities': formatted_activities,
-        'unread_count': unread_count,
-    }
-    
-    return render(request, 'dashboard.html', context)
+    # 1. ADMIN CHECK:
+    if user.is_superuser or user.groups.filter(name__iexact='Admin').exists():
+        users = User.objects.prefetch_related(
+            Prefetch('groups', queryset=Group.objects.all(), to_attr='all_groups')
+        ).all()
+
+        for u in users:
+            u.group_name = u.all_groups[0].name if u.all_groups else "No Group Assign"
+
+        # Admin extra stats
+        total_events = Event.objects.count()
+        total_participants = EventParticipant.objects.count()
+
+        context = {
+            "users": users,
+            "total_users": users.count(),
+            "total_events": total_events,
+            "total_participants": total_participants,
+        }
+        return render(request, 'admin/admin_dashboard.html', context)
+
+    # 2. REGULAR USER
+    else:
+        # Upcoming RSVPs
+        upcoming_rsvps = EventParticipant.objects.filter(
+            user=user,
+            event__date__gte=timezone.now().date(),
+            status='going'
+        ).select_related('event').order_by('event__date')[:3]
+        
+        saved_count = SavedEvent.objects.filter(user=user).count()
+        attended_count = EventParticipant.objects.filter(
+            user=user, event__date__lt=timezone.now().date(), status='attended'
+        ).count()
+        upcoming_count = EventParticipant.objects.filter(
+            user=user, event__date__gte=timezone.now().date(), status='going'
+        ).count()
+        
+        week_ago = timezone.now() - timedelta(days=7)
+        new_this_week = EventParticipant.objects.filter(user=user, joined_at__gte=week_ago).count()
+        new_saved = SavedEvent.objects.filter(user=user, created_at__gte=week_ago).count()
+        
+        recent_activities = UserActivity.objects.filter(user=user).select_related('event')[:5]
+        unread_count = Notification.objects.filter(user=user, is_read=False).count()
+        
+        formatted_activities = []
+        for activity in recent_activities:
+            formatted_activities.append({
+                'action': activity.get_activity_type_display(),
+                'event_title': activity.event.title,
+                'time_ago': time_ago(activity.created_at),
+            })
+        
+        context = {
+            'upcoming_rsvps': upcoming_rsvps,
+            'saved_count': saved_count,
+            'attended_count': attended_count,
+            'upcoming_count': upcoming_count,
+            'new_this_week': new_this_week,
+            'new_saved': new_saved,
+            'recent_activities': formatted_activities,
+            'unread_count': unread_count,
+        }
+        return render(request, 'dashboard.html', context)
 
 
 @login_required
@@ -434,26 +373,6 @@ def save_event(request, id):
 
 
 @method_decorator(login_required, name='dispatch')
-class ParticipantListView(TemplateView):
-    template_name = 'admin/user_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        users = User.objects.prefetch_related(
-            Prefetch('groups', queryset=Group.objects.all(), to_attr='all_groups')
-        ).all()
-
-        for user in users:
-            if user.all_groups:
-                user.group_name = user.all_groups[0].name
-            else:
-                user.group_name = "No Group Assign"
-
-        context['users'] = users
-        return context
-
-
-@method_decorator(login_required, name='dispatch')
 class ProfileView(TemplateView):
     template_name = 'accounts/profile.html'
 
@@ -471,36 +390,16 @@ class ProfileView(TemplateView):
         context['member_since'] = user.date_joined
         context['last_login'] = user.last_login
         return context
-
-@method_decorator(login_required, name='dispatch')
-class EditProfileView(UpdateView):
-    model = User
-    form_class = EditProfileForm
-    template_name = 'accounts/update_profile.html'
-    context_object_name = 'form'
-
-    def get_object(self):
-        return self.request.user
-    
-    def form_valid(self, form):
-        form.save()
-        return redirect('profile')
     
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'registration/reset_password.html'
     form_class = CustomPasswordResetForm
     html_email_template_name = 'registration/reset_email.html'
-    success_url = reverse_lazy('sign-in')
+    success_url = reverse_lazy('password-reset') # Same page-e success message dekhate
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['protocol'] = 'https' if self.request.is_secure() else 'http'
-        context['domain'] = self.request.get_host()
-        return context
-    
     def form_valid(self, form):
-        messages.success(self.request, 'A Reset Email has been sent. Please Check Your Email....')
+        messages.success(self.request, 'A reset link has been sent to your email. Please check your inbox.')
         return super().form_valid(form)
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
@@ -509,8 +408,7 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     success_url = reverse_lazy('sign-in')
 
     def form_valid(self, form):
-        messages.success(self.request, 'Your Password has been reset successfully. Please Sign In.')
+        messages.success(self.request, 'Password reset successful! You can now log in.')
         return super().form_valid(form)
-        
 
     

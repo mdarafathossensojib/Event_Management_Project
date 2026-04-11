@@ -109,32 +109,6 @@ class LoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
 
 
-class AssignRoleForm(forms.Form):
-    role = forms.ModelChoiceField(
-        queryset = Group.objects.all(),
-        empty_label = "Select a Role"
-    )
-
-
-class CreateGroupForm(forms.ModelForm):
-    permissions = forms.ModelMultipleChoiceField(
-        queryset = Permission.objects.all(),
-        widget = forms.CheckboxSelectMultiple,
-        required=False,
-        label='Assign Permission'
-    )
-
-    class Meta:
-        model = Group
-        fields = ['name', 'permissions']
-
-        widgets = {
-                'name': forms.TextInput(attrs={
-                    'class': 'w-full px-3 py-2 mt-1 mb-2 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500',
-                    'placeholder': 'Enter Group Name'
-                })
-        }
-
 
 class CustomPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(
@@ -161,26 +135,29 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         })
     )
 
+
+
 class CustomPasswordResetForm(PasswordResetForm):
     email = forms.EmailField(
         label="Email Address",
         widget=forms.EmailInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
-            'placeholder': 'Enter your email'
+            'class': 'w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none transition-all',
+            'placeholder': 'Enter your registered email'
         })
     )
+
 class CustomPasswordConfirmForm(SetPasswordForm):
     new_password1 = forms.CharField(
         label="New Password",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'class': 'w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none transition-all',
             'placeholder': 'Enter new password'
         })
     )
     new_password2 = forms.CharField(
         label="Confirm Password",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500',
+            'class': 'w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none transition-all',
             'placeholder': 'Re-enter new password'
         })
     )

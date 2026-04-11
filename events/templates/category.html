@@ -1,108 +1,79 @@
 {% extends 'base.html' %}
-{% block title %}Category{% endblock %}
+{% block title %}Categories{% endblock %}
 
 {% block content %}
-
 {% load static %}
 
-<!-- Category -->
-    <div class="max-w-7xl mx-auto grid grid-cols-12 h-32">
-      <div class="col-span-12 lg:col-span-7 flex items-center px-4">
-        <p class="text-3xl text-500">Category | Event</p>
-      </div>
-    </div>
+<section class="relative min-h-screen mt-10 pt-32 pb-20 overflow-hidden bg-black text-white">
+    
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]"></div>
 
-  <!-- Main Container -->
-  <div class="max-w-7xl mx-auto grid grid-cols-12 gap-6 pt-4">
-
-    <!-- Left Section (8 columns) -->
-    <div class="col-span-12 lg:col-span-8">
-
-      <!-- Events List -->
-      <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-        <h2 class="text-2xl font-bold mb-2">Category List</h2>
-
-        <div class="bg-gray-200 p-3 rounded-lg grid grid-cols-12 gap-4">
-            <div class="col-span-12 lg:col-span-5 font-semibold">
-                Category Name
-            </div>
-            <div class="col-span-12 lg:col-span-7 gap-2 mt-2 space-y-2 font-semibold">
-              Category Description
-            </div>
-          </div>
-
-        {% for ct in category %}
-          <div class="bg-gray-200 p-3 rounded-lg grid grid-cols-12 gap-4">
-            <div class="col-span-12 lg:col-span-5">
-                {{ ct.name }}
-            </div>
-            <div class="col-span-12 lg:col-span-7 gap-2 mt-2 space-y-2">
-              {{ ct.description }}
-            </div>
-          </div>
-        {% endfor %}
-      </div>
-
-    </div>
-
-    <!-- Right Section (4 columns) -->
-    <div class="col-span-12 lg:col-span-4 space-y-4">
-
-      <div class="p-4 rounded-lg text-center bg-gray-300 p-4 rounded-xl space-y-4">
-        <div class="bg-gray-300 p-4 rounded-xl space-y-4">
-          <h1 class="text-2xl font-bold mb-4">Create Category</h1>
-          {% if request.user.is_superuser %}
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="mt-4 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
-                Save
-                </button>
-            </form>
-            {% else %}
-            <h1 class="text-xl my-4">Only Admin Can Create Category</h1>
-            {% endif %}
+    <div class="container mx-auto px-4 lg:px-8 relative z-10">
+        
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-widest uppercase mb-6 inline-block">
+                Browse by Interest
+            </span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
+                Find Your <span class="text-cyan-400">Passion</span>
+            </h1>
+            <p class="text-gray-400 text-lg">
+                Whether you're looking to upgrade your skills, network with pros, or just have fun, 
+                we've curated the best events across all industries for you.
+            </p>
         </div>
-      </div>
 
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-5">
+            {% for category in categories %}
+            <a href="{% url 'category_detail' category.id %}" class="group relative block rounded-2xl transition-all duration-300">
+    
+                <div class="absolute -inset-[1px] bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-300 blur-[2px] group-hover:blur-0"></div>
+                
+                <div class="relative bg-zinc-900 border border-zinc-800 rounded-2xl p-8 h-full flex flex-col items-center text-center transition-all duration-300 group-hover:bg-black group-hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]">
+                    
+                    <div class="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-cyan-500 group-hover:scale-110">
+                        <i class="fas {{ category.icon|default:'fa-tags' }} text-2xl text-cyan-400 transition-colors duration-300 group-hover:text-black"></i>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-white mb-3 tracking-wide transition-colors group-hover:text-cyan-400">
+                        {{ category.name }}
+                    </h3>
+                    
+                    <p class="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">
+                        {{ category.description|truncatewords:15|default:"Explore the latest trends and connect with experts in this field." }}
+                    </p>
+
+                    <div class="flex items-center justify-between w-full pt-4 border-t border-zinc-800/50">
+                        <span class="text-xs font-medium text-cyan-400">
+                            {{ category.event_count }} Events
+                        </span>
+                        <div class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-cyan-500/20">
+                            <svg class="w-4 h-4 text-gray-400 group-hover:text-cyan-400 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="col-span-full text-center py-20">
+                <p class="text-gray-500">No categories found. Check back later!</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-32 grid md:grid-cols-2 gap-8">
+            <div class="p-10 rounded-3xl bg-gradient-to-br from-zinc-900 to-black border border-zinc-800">
+                <h4 class="text-2xl font-bold mb-4">Host Your Own Category?</h4>
+                <p class="text-gray-400 mb-6">If you're an organizer looking to create a unique niche, we're here to support your community's growth.</p>
+                <a href="{% url 'contact' %}" class="text-cyan-400 font-semibold hover:underline">Get started →</a>
+            </div>
+            <div class="p-10 rounded-3xl bg-zinc-900/30 border border-dashed border-zinc-700 flex flex-col justify-center">
+                <p class="text-gray-400 italic">"Eventify transformed how I find workshops. The categories are so well-organized that I found my dream mentor in just two clicks!"</p>
+                <span class="mt-4 text-white font-bold">— Professional Developer</span>
+            </div>
+        </div>
     </div>
-
-  </div>
-
-{% comment %} Messages Pop-Up Model {% endcomment %}
-  {% if messages %}
-<div id="successModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-80 text-center">
-        <h2 class="text-xl font-semibold text-green-600 mb-3 flex">Success <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mt-1">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-</svg>
-</h2>
-
-        {% for message in messages %}
-            <p class="text-gray-700 mb-4">{{ message }}</p>
-        {% endfor %}
-
-        <button id="closeModal"
-            class="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-            Close
-        </button>
-    </div>
-</div>
-
-<script>
-    // close button
-    document.getElementById("closeModal").onclick = function () {
-        document.getElementById("successModal").style.display = "none";
-    };
-
-    // click outside to close
-    window.onclick = function(e){
-        const modal = document.getElementById("successModal");
-        if(e.target === modal){
-            modal.style.display = "none";
-        }
-    };
-</script>
-{% endif %}
-
+</section>
 {% endblock %}
